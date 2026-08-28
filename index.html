@@ -264,7 +264,12 @@ button,input,textarea,select{ font-family:inherit; font-size:inherit; }
 /* ============================================================
    8. WHO WE SERVE
    ============================================================ */
-.serve{ background:var(--white); padding-block:clamp(1rem,3vw,2rem) clamp(3.5rem,8vw,6rem); }
+.serve{
+  background:var(--white);
+  padding-block:clamp(1rem,3vw,2rem) clamp(3.5rem,8vw,6rem);
+  --card:clamp(260px,26vw,440px);
+  --lap:clamp(40px,7vw,90px);
+}
 .serve .eye__lid,.serve .eye__glint{ fill:var(--white); }
 .serve__chips{ display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:clamp(1.25rem,3vw,2rem); }
 .chip{
@@ -279,7 +284,8 @@ button,input,textarea,select{ font-family:inherit; font-size:inherit; }
 .rail{
   overflow-x:auto; overflow-y:hidden; scrollbar-width:none;
   scroll-snap-type:x proximity; cursor:grab;
-  padding-block:clamp(1rem,2.5vw,2rem); touch-action:pan-x pan-y;
+  padding-block:clamp(1rem,2.5vw,2rem);
+  touch-action:pan-x pan-y; overscroll-behavior-x:contain;
 }
 .rail::-webkit-scrollbar{ display:none; }
 .rail.is-dragging{ cursor:grabbing; scroll-snap-type:none; }
@@ -291,8 +297,8 @@ button,input,textarea,select{ font-family:inherit; font-size:inherit; }
 }
 
 .demo{
-  position:relative; flex:0 0 auto;
-  width:clamp(230px,58vw,340px);
+  position:relative; flex:0 0 auto; z-index:1;
+  width:var(--card);
   border-radius:16px; background:var(--white);
   border:1px solid rgba(16,16,16,.1);
   box-shadow:0 24px 48px -30px rgba(16,16,16,.55);
@@ -300,12 +306,12 @@ button,input,textarea,select{ font-family:inherit; font-size:inherit; }
   transform-origin:center bottom;
   transition:transform .38s cubic-bezier(.4,0,.2,1),box-shadow .38s ease;
 }
-.demo + .demo{ margin-left:clamp(-120px,-9vw,-60px); }
-.demo:hover,.demo:focus-visible{
+.demo + .demo{ margin-left:calc(var(--lap) * -1); }
+.demo:hover,.demo:focus-visible,.demo.is-picked{
   transform:translateY(-16px) scale(1.03);
   box-shadow:0 42px 72px -32px rgba(16,16,16,.62); z-index:5;
 }
-.demo:hover ~ .demo,.demo:focus-visible ~ .demo{ transform:translateX(clamp(45px,5vw,90px)); }
+.demo:hover ~ .demo,.demo:focus-visible ~ .demo,.demo.is-picked ~ .demo{ transform:translateX(var(--lap)); }
 
 .demo__bar{
   display:flex; align-items:center; gap:.5rem; padding:.5rem .7rem;
@@ -342,7 +348,7 @@ button,input,textarea,select{ font-family:inherit; font-size:inherit; }
   transition:opacity .3s ease,transform .3s cubic-bezier(.4,0,.2,1);
 }
 .demo__cta svg{ color:var(--lime); flex-shrink:0; }
-.demo:hover .demo__cta,.demo:focus-visible .demo__cta{ opacity:1; transform:none; }
+.demo:hover .demo__cta,.demo:focus-visible .demo__cta,.demo.is-picked .demo__cta{ opacity:1; transform:none; }
 @media (hover:none){
   .demo__cta{ opacity:1; transform:none; }
   .demo:hover ~ .demo{ transform:none; }
@@ -1234,11 +1240,21 @@ button,input,textarea,select{ font-family:inherit; font-size:inherit; }
     });
   }
 
-  /* ---------- Who We Serve rail ---------- */
+    /* ---------- Who We Serve rail ---------- */
   var rail = document.getElementById('rail');
   if(!rail) return;
   var cards = Array.prototype.slice.call(rail.querySelectorAll('.demo'));
   var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+  if(!cards.length || !chips.length) return;
+
+  var current = -1, lockUntil = 0, ticking = false;
+
+  function setActive(i){
+    if(i === current || i < 0 || i >= chips.length) return;
+    current = i;
+    chips.forEach(function(ch,n){ ch.classList.toggle('is-active', n === i); });
+    cards.forEach(function(c,n){ c.classList.toggle('is-picked', n === i); });
+  }
 
   var down=false, startX=0, startScroll=0, moved=false;
   rail.addEventListener('pointerdown', function(e){
@@ -1249,24 +1265,44 @@ button,input,textarea,select{ font-family:inherit; font-size:inherit; }
   rail.addEventListener('pointermove', function(e){
     if(!down) return;
     var dx = e.clientX - startX;
-    if(Math.abs(dx) > 4) moved = true;
+    if(Math.abs(dx) > 8) moved = true;
     rail.scrollLeft = startScroll - dx;
   });
-  function endDrag(){ if(!down) return; down=false; rail.classList.remove('is-dragging'); }
+  function endDrag(){
+    if(!down) return;
+    down = false;
+    rail.classList.remove('is-dragging');
+    setTimeout(function(){ moved = false; }, 0);
+  }
   rail.addEventListener('pointerup', endDrag);
   rail.addEventListener('pointercancel', endDrag);
   rail.addEventListener('pointerleave', endDrag);
-  rail.addEventListener('click', function(e){ if(moved){ e.preventDefault(); moved=false; } }, true);
+  rail.addEventListener('click', function(e){ if(moved) e.preventDefault(); }, true);
 
-  chips.forEach(function(chip){
+  chips.forEach(function(chip, i){
     chip.addEventListener('click', function(){
-      var card = cards[Number(chip.dataset.go)];
+      lockUntil = Date.now() + 700;
+      setActive(i);
+      var card = cards[Number(chip.dataset.go)] || cards[i];
       if(card) card.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+    });
+    chip.addEventListener('keydown', function(e){
+      var step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if(!step) return;
+      e.preventDefault();
+      var next = chips[(i + step + chips.length) % chips.length];
+      next.focus(); next.click();
     });
   });
 
-  var ticking = false;
   function syncChips(){
+    ticking = false;
+    if(Date.now() < lockUntil) return;
+
+    var max = rail.scrollWidth - rail.clientWidth;
+    if(rail.scrollLeft <= 2){ setActive(0); return; }
+    if(max > 0 && rail.scrollLeft >= max - 2){ setActive(cards.length - 1); return; }
+
     var r = rail.getBoundingClientRect(), mid = r.left + r.width/2;
     var best = 0, bestD = Infinity;
     cards.forEach(function(c,i){
@@ -1274,14 +1310,23 @@ button,input,textarea,select{ font-family:inherit; font-size:inherit; }
       var d = Math.abs(cr.left + cr.width/2 - mid);
       if(d < bestD){ bestD = d; best = i; }
     });
-    chips.forEach(function(ch,i){ ch.classList.toggle('is-active', i === best); });
-    ticking = false;
+    setActive(best);
   }
   rail.addEventListener('scroll', function(){
     if(ticking) return;
     ticking = true;
     window.requestAnimationFrame(syncChips);
   }, { passive:true });
+  window.addEventListener('resize', function(){
+    lockUntil = 0;
+    window.requestAnimationFrame(syncChips);
+  });
+  cards.forEach(function(c,i){
+    c.addEventListener('focus', function(){
+      setActive(i);
+      c.scrollIntoView({ behavior:'smooth', inline:'center', block:'nearest' });
+    });
+  });
   syncChips();
 })();
 </script>
