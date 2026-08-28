@@ -307,6 +307,8 @@ button,input,textarea,select{ font-family:inherit; font-size:inherit; }
   transition:transform .38s cubic-bezier(.4,0,.2,1),box-shadow .38s ease;
 }
 .demo + .demo{ margin-left:calc(var(--lap) * -1); }
+.demo{ -webkit-user-drag:none; user-select:none; }
+.demo img,.demo svg{ -webkit-user-drag:none; pointer-events:none; }
 .demo:hover,.demo:focus-visible,.demo.is-picked{
   transform:translateY(-16px) scale(1.03);
   box-shadow:0 42px 72px -32px rgba(16,16,16,.62); z-index:5;
@@ -1256,35 +1258,46 @@ button,input,textarea,select{ font-family:inherit; font-size:inherit; }
     cards.forEach(function(c,n){ c.classList.toggle('is-picked', n === i); });
   }
 
-  var down = false, startX = 0, startScroll = 0, dragDist = 0;
+  /* stop the browser's native link-dragging, which eats the pointerup */
+  rail.addEventListener('dragstart', function(e){ e.preventDefault(); });
+
+  var down = false, startX = 0, startScroll = 0, dragDist = 0, pid = null;
 
   rail.addEventListener('pointerdown', function(e){
     if(e.pointerType === 'touch') return;
-    down = true;
-    dragDist = 0;                      /* every click starts here, so nothing stale survives */
-    startX = e.clientX;
-    startScroll = rail.scrollLeft;
+    if(e.button !== 0) return;
+    e.preventDefault();
+    down = true; dragDist = 0; pid = e.pointerId;
+    startX = e.clientX; startScroll = rail.scrollLeft;
     rail.classList.add('is-dragging');
+    try { rail.setPointerCapture(pid); } catch(err){}
   });
 
-  window.addEventListener('pointermove', function(e){
-    if(!down) return;
+  rail.addEventListener('pointermove', function(e){
+    if(!down || e.pointerId !== pid) return;
     var dx = e.clientX - startX;
     dragDist = Math.abs(dx);
     rail.scrollLeft = startScroll - dx;
   });
 
-  function endDrag(){
+  function endDrag(e){
+    if(!down) return;
     down = false;
-    rail.classList.remove('is-dragging');   /* runs unconditionally now */
-  }
-  window.addEventListener('pointerup', endDrag);
-  window.addEventListener('pointercancel', endDrag);
-  window.addEventListener('blur', endDrag);
+    rail.classList.remove('is-dragging');
+    if(pid !== null){ try { rail.releasePointerCapture(pid); } catch(err){} pid = null; }
 
-  rail.addEventListener('click', function(e){
-    if(dragDist > 8) e.preventDefault();
-  }, true);
+    /* preventDefault above suppresses the native click, so fire it ourselves */
+    if(dragDist <= 8 && e){
+      var link = e.target.closest && e.target.closest('.demo');
+      if(link && link.getAttribute('href') && link.getAttribute('href') !== '#'){
+        window.open(link.href, link.target || '_self', 'noopener');
+      }
+    }
+  }
+  rail.addEventListener('pointerup', endDrag);
+  rail.addEventListener('pointercancel', endDrag);
+  window.addEventListener('pointerup', endDrag);
+  window.addEventListener('blur', function(){ endDrag(null); });
 
   chips.forEach(function(chip, i){
     chip.addEventListener('click', function(){
