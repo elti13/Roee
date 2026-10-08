@@ -78,6 +78,9 @@
   select option{color:#000}
   .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
   @media (max-width:380px){.row{grid-template-columns:1fr}}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px}
+  .chip{font:500 .85rem var(--f-ui); color:var(--cream); background:var(--field); border:1px solid var(--line); border-radius:999px; padding:8px 13px; cursor:pointer}
+  .chip[aria-pressed="true"]{background:var(--gold); border-color:var(--gold); color:var(--bg)}
   .tryanother{background:none; border:0; color:var(--gold); font:500 .82rem var(--f-ui); cursor:pointer; padding:8px 0 0}
   .divider{height:1px; background:var(--line); margin:22px 0}
 
@@ -124,11 +127,12 @@
     <section class="step" data-step="happy" aria-labelledby="happyTitle">
       <button class="back" type="button" data-back>&larr; Change rating</button>
       <h2 id="happyTitle">We're so glad you enjoyed it!</h2>
-      <p class="lede">Would you share it on Google? We started a review for you. Change anything you like.</p>
+      <p class="lede">Tell us what you enjoyed. Tap an idea to add it, or write your own.</p>
 
-      <label for="draft" class="sr">Your review</label>
-      <textarea id="draft" data-draft placeholder="Write a few words about your visit."></textarea>
-      <button class="tryanother" type="button" data-another>&#8635; Try a different one</button>
+      <div class="chips" role="group" aria-label="Ideas" data-ideas></div>
+
+      <label for="draft" class="sr">Your note</label>
+      <textarea id="draft" data-draft placeholder="What did you enjoy about your visit?"></textarea>
 
       <div style="margin-top:20px">
         <a class="btn btn--gold" data-platform="google" href="#" target="_blank" rel="noopener">
@@ -137,11 +141,11 @@
         </a>
         <a class="btn btn--ghost" data-platform="yelp" href="#" target="_blank" rel="noopener">Post on Yelp</a>
       </div>
-      <p class="hint center">We copy your review for you. Just paste it.</p>
-      <button class="link" type="button" data-to-feedback>Send a private note to the owner instead</button>
+      <p class="hint center">Want to share it publicly? We copy your words for you. Just paste them.</p>
 
       <div class="divider"></div>
-      <button class="btn btn--red" type="button" data-claim>Get my 10% off</button>
+      <p class="err" role="alert" data-claim-err></p>
+      <button class="btn btn--red" type="button" data-claim>Send to the owner &amp; get 10% off</button>
     </section>
 
     <!-- 2b · 1–3 stars → texted to the owner -->
@@ -193,6 +197,14 @@
       <p class="public">Prefer to share publicly? <a data-platform="google" href="#" target="_blank" rel="noopener">Google</a> or <a data-platform="yelp" href="#" target="_blank" rel="noopener">Yelp</a></p>
     </section>
 
+    <!-- 2c · Free texting setup: the note goes from the guest's own text app; coupon after they come back -->
+    <section class="step center" data-step="texting" aria-labelledby="textingTitle">
+      <h2 id="textingTitle">Almost done!</h2>
+      <p class="lede">Your text app opened with your note to the owner. <strong>Press send</strong>, then come back here for your 10% off.</p>
+      <button class="btn btn--red" type="button" data-sent disabled>I sent it, show my 10% off</button>
+      <a class="link" data-sms-again href="#">Didn't open? Tap to text the owner</a>
+    </section>
+
     <!-- 3 · Thank you + coupon: same reward whatever the rating, no review required -->
     <section class="step center" data-step="done" aria-labelledby="doneTitle">
       <div class="done-mark"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
@@ -225,30 +237,24 @@
   };
   var PLATFORMS = { google: 'Google', yelp: 'Yelp' };
   var STAR_WORDS = ['', 'Poor', 'Not great', 'Okay', 'Good', 'Excellent'];
-  // Ready-made reviews; each guest starts with a random one so posts don't all look alike.
-  var TEMPLATES = {
-    5: [
-      'Excellent meal at Eyerus! The food was full of flavor and the staff made us feel at home. We will be back.',
-      'Best Ethiopian food in Stone Mountain. Generous portions, fresh injera and really friendly service.',
-      'Great spot for Ethiopian food and to catch the game. Good food, good drinks, great people.',
-      'Everything was delicious and came out quickly. The owner and staff are so welcoming. Highly recommend!',
-      'If you love Ethiopian food, go to Eyerus. Authentic flavors and warm hospitality.',
-      'Loved our dinner here. The tibs and doro wat were amazing, and the service was friendly.',
-      'Delicious food, fair prices and a relaxed atmosphere. One of our favorite spots now.',
-      'First time at Eyerus and it won’t be the last. Amazing food and great service.'
-    ],
-    4: [
-      'Really good Ethiopian food and friendly staff. We’ll be back.',
-      'Tasty food and good portions. Nice place to eat and watch the game.',
-      'Good meal at Eyerus. Flavorful dishes and welcoming service.',
-      'Solid Ethiopian spot in Stone Mountain. Good food at fair prices.',
-      'Enjoyed our visit. The food was fresh and the staff were kind.'
-    ]
+  // Idea buttons: tapping one adds its sentence to the guest's note (tap again to remove it).
+  var IDEAS = {
+    'Doro wat': 'The doro wat was delicious.',
+    'Kitfo': 'The kitfo was amazing.',
+    'Tibs': 'The tibs were full of flavor.',
+    'Veggie combo': 'Loved the veggie combo.',
+    'Injera': 'The injera was fresh and soft.',
+    'Coffee': 'Great Ethiopian coffee.',
+    'Friendly staff': 'The staff were friendly and welcoming.',
+    'Quick service': 'Our food came out quickly.',
+    'Watching the game': 'Great spot to watch the game.',
+    'Drinks & bar': 'Good drinks at the bar.',
+    'Good value': 'Great value for the price.'
   };
 
   var $ = function(s, r){ return (r || document).querySelector(s); };
   var $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  var state = { stars: 0, pool: [], i: 0 };
+  var state = { stars: 0 };
 
   $$('a[data-platform]').forEach(function(a){ a.href = CONFIG.links[a.dataset.platform]; });
 
@@ -289,30 +295,51 @@
 
   var draft = $('[data-draft]');
   function rate(v){
-    var changed = v !== state.stars;
     state.stars = v; paint(v);
     stars.forEach(function(s){ s.setAttribute('aria-checked', String(+s.dataset.v === v)); });
-    if (v >= 4 && changed){ state.pool = shuffle(TEMPLATES[v]); state.i = 0; draft.value = state.pool[0]; }
     setTimeout(function(){ v >= 4 ? go('happy') : openFeedback(false); }, 260);
   }
 
   /* ---------- Happy path ---------- */
-  function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  $('[data-another]').addEventListener('click', function(){ state.i = (state.i + 1) % state.pool.length; draft.value = state.pool[state.i]; });
+  Object.keys(IDEAS).forEach(function(name){
+    var c = document.createElement('button');
+    c.type = 'button'; c.className = 'chip'; c.textContent = name; c.setAttribute('aria-pressed', 'false');
+    c.addEventListener('click', function(){
+      var line = IDEAS[name], text = draft.value;
+      if (text.indexOf(line) > -1){
+        draft.value = text.replace(line, '').replace(/\s{2,}/g, ' ').trim();
+        c.setAttribute('aria-pressed', 'false');
+      } else {
+        draft.value = (text.trim() ? text.trim() + ' ' : '') + line;
+        c.setAttribute('aria-pressed', 'true');
+      }
+      claimErr.textContent = '';
+    });
+    $('[data-ideas]').appendChild(c);
+  });
+  var claimErr = $('[data-claim-err]');
 
   $$('[data-step="happy"] a[data-platform]').forEach(function(a){
     a.addEventListener('click', function(){
       var t = draft.value.trim();
-      if (t && navigator.clipboard) navigator.clipboard.writeText(t).then(function(){
+      if (!t){ toast('Tip: tap a few ideas first so your review is ready to paste.'); return; }
+      if (navigator.clipboard) navigator.clipboard.writeText(t).then(function(){
         toast('Copied! Paste it into the review box on ' + PLATFORMS[a.dataset.platform] + '.');
       }).catch(function(){});
     });
   });
+  // The 10% comes only after the guest writes a note, and that note goes to the owner.
   $('[data-claim]').addEventListener('click', function(){
-    send({ kind: 'rating', stars: state.stars, message: draft.value.trim() || '(no comment)' }); // only reaches the owner if the optional SMS service is set up
-    showCoupon('Here’s 10% off your next visit. We hope to see you again soon!');
+    var note = draft.value.trim();
+    if (note.length < 10){ claimErr.textContent = 'Write a few words (or tap an idea) to get your 10% off.'; draft.focus(); return; }
+    var btn = this; btn.disabled = true;
+    var data = { kind: 'rating', stars: state.stars, message: note };
+    send(data).then(function(sent){
+      btn.disabled = false;
+      var msg = 'Thanks for the kind words! Here’s 10% off your next visit.';
+      sent ? showCoupon(msg) : textOwner(data, msg);
+    });
   });
-  $('[data-to-feedback]').addEventListener('click', function(){ openFeedback(true); });
 
   /* ---------- Private feedback → owner's phone ---------- */
   function openFeedback(fromHappy){
@@ -342,26 +369,33 @@
     var btn = $('[data-submit]'); btn.disabled = true; btn.textContent = 'Sending…';
     send(data).then(function(sent){
       btn.disabled = false; btn.textContent = 'Send to the owner';
-      if (!sent) textOwner(data);
       var first = data.name.split(' ')[0];
+      var msg = data.followUp ? 'The owner has your note and will reach out to ' + first + ' soon.' : 'The owner has your note. Thank you for helping us improve.';
       form.reset(); write.classList.remove('is-on'); writeToggle.hidden = false; contact.classList.remove('is-on');
-      showCoupon(!sent ? 'Your text app opened with your note to the owner. Press send, then show this to your server.'
-        : data.followUp ? 'The owner has your note and will reach out to ' + first + ' soon.'
-        : 'The owner has your note. Thank you for helping us improve.');
+      sent ? showCoupon(msg) : textOwner(data, msg);
     });
   });
 
   // No SMS service set up: open the guest's own Messages app, addressed to the owner, note filled in.
   // Guests who want to talk are flagged on the first line so the owner spots them at a glance.
-  function textOwner(d){
+  // The coupon waits on a "press send, then come back" screen; the button unlocks once they return (or after a few seconds).
+  var sentBtn = $('[data-sent]'), afterSend = '';
+  function textOwner(d, msg){
     var lines = [
       d.followUp ? '📞 WANTS TO TALK — ' + d.name + ' ' + d.phone : '',
-      'Eyerus feedback: ' + d.stars + '/5', 'Issue: ' + d.issue,
+      (d.stars >= 4 ? '⭐ ' : '') + 'Eyerus feedback: ' + d.stars + '/5', d.issue && 'Issue: ' + d.issue,
       d.message && '"' + d.message + '"',
       'Coupon ' + current.code
     ];
-    location.href = 'sms:' + CONFIG.ownerSms + '?&body=' + encodeURIComponent(lines.filter(Boolean).join('\n'));
+    var href = 'sms:' + CONFIG.ownerSms + '?&body=' + encodeURIComponent(lines.filter(Boolean).join('\n'));
+    $('[data-sms-again]').href = href;
+    afterSend = msg; sentBtn.disabled = true;
+    go('texting');
+    setTimeout(function(){ sentBtn.disabled = false; }, 6000);
+    location.href = href;
   }
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden) sentBtn.disabled = false; });
+  sentBtn.addEventListener('click', function(){ showCoupon(afterSend); });
 
   /* ---------- Coupon (one per phone, kept across refreshes) ---------- */
   function coupon(){
