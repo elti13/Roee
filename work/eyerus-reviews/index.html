@@ -140,7 +140,7 @@
         </a>
         <a class="btn btn--ghost" data-platform="yelp" href="#">Post on Yelp</a>
       </div>
-      <p class="hint center">We copy your words for you. Just paste them.<br>After posting, tap <strong>Back</strong> to return here for your <span data-pct>10</span>% off.</p>
+      <p class="hint center">We copy your words for you. Just paste them.<br>After posting, tap <strong>Back</strong> and your <span data-pct>10</span>% discount code will be waiting.</p>
 
       <div class="divider"></div>
       <p class="err" role="alert" data-happy-err></p>
@@ -352,9 +352,16 @@
     // Happy guests who tapped Post on Google already had their note texted; don't text it twice.
     if (!state.noteSent) sendNote(p, false);
     form.reset(); write.classList.remove('is-on'); writeToggle.hidden = false; contact.classList.remove('is-on');
-    try { localStorage.removeItem('eyerus-progress'); localStorage.setItem('eyerus-claimed', today()); } catch (e) {}
-    showCoupon(state.doneMsg);
+    claim(p, state.doneMsg);
   });
+  function claim(p, msg){
+    try {
+      localStorage.removeItem('eyerus-progress');
+      localStorage.setItem('eyerus-claimed', JSON.stringify({ day: today(), stars: p.stars, note: p.stars >= 4 ? p.message : '' }));
+    } catch (e) {}
+    state.pending = p;
+    showCoupon(msg);
+  }
 
   /* ---------- Coupon: today only, one per phone per day ----------
      The first letter tells staff the rating group without showing stars: E = 4–5 stars, N = 1–3. */
@@ -403,19 +410,23 @@
 
   /* ---------- Coming back after posting on Google/Yelp ----------
      Google can't send people back, so we remember where they were. Pressing Back (or scanning the
-     QR code again the same day) lands them on "Claim your 10% off" with their note already sent. */
+     QR code again the same day) shows their discount code right away, ready for the server.
+     A code already claimed today shows again too, so a lost tab never costs them the discount. */
   function saveProgress(note){
     try { localStorage.setItem('eyerus-progress', JSON.stringify({ day: today(), stars: state.stars, note: note })); } catch (e) {}
   }
   function resume(){
     try {
+      var claimed = null;
+      try { claimed = JSON.parse(localStorage.getItem('eyerus-claimed') || 'null'); } catch (e) {}
+      if (claimed && claimed.day === today()){
+        state.pending = { stars: claimed.stars, message: claimed.note };
+        return showCoupon('Here’s your code again. Show it to your server before you pay.');
+      }
       var progress = JSON.parse(localStorage.getItem('eyerus-progress') || 'null');
-      if (!progress || progress.day !== today() || localStorage.getItem('eyerus-claimed') === today()) return;
-      state.stars = progress.stars; paint(progress.stars); state.noteSent = true;
-      stars.forEach(function(s){ s.setAttribute('aria-checked', String(+s.dataset.v === progress.stars)); });
-      draft.value = progress.note;
-      toClaim({ kind: 'rating', stars: progress.stars, message: progress.note }, 'happy', HAPPY_DONE);
-      toast('Welcome back! Claim your ' + CONFIG.percent + '% off below.');
+      if (!progress || progress.day !== today()) return;
+      state.stars = progress.stars; state.noteSent = true;
+      claim({ kind: 'rating', stars: progress.stars, message: progress.note }, 'Thanks for sharing! Show this code to your server before you pay.');
     } catch (e) {}
   }
   resume();
