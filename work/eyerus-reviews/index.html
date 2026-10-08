@@ -124,7 +124,7 @@
       <p class="star-label" aria-live="polite" data-star-label>Tap a star</p>
     </section>
 
-    <!-- 2a · 4–5 stars: write a note; optionally share it on Google/Yelp -->
+    <!-- 2a · 4–5 stars: write a note; optionally post it on Google/Yelp, then Back brings them to the claim page -->
     <section class="step" data-step="happy" aria-labelledby="happyTitle">
       <button class="back" type="button" data-back>&larr; Change rating</button>
       <h2 id="happyTitle">We're so glad you enjoyed it!</h2>
@@ -134,13 +134,13 @@
       <textarea id="draft" data-draft placeholder="e.g. The doro wat was great, the staff were friendly and it was a fun place to watch the game."></textarea>
 
       <div style="margin-top:20px">
-        <a class="btn btn--gold" data-platform="google" href="#" target="_blank" rel="noopener">
+        <a class="btn btn--gold" data-platform="google" href="#">
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.35 11.1H12v2.98h5.35c-.5 2.4-2.6 3.92-5.35 3.92a5.99 5.99 0 1 1 0-12c1.5 0 2.84.55 3.88 1.45l2.2-2.2A9.1 9.1 0 0 0 12 3a9 9 0 1 0 0 18c4.65 0 8.8-3.27 8.8-9 0-.3-.03-.6-.08-.9z"/></svg>
           Post on Google
         </a>
-        <a class="btn btn--ghost" data-platform="yelp" href="#" target="_blank" rel="noopener">Post on Yelp</a>
+        <a class="btn btn--ghost" data-platform="yelp" href="#">Post on Yelp</a>
       </div>
-      <p class="hint center">We copy your words for you. Just paste them.<br>When you're done, close the Google tab or scan the QR code again to come back for your <span data-pct>10</span>% off.</p>
+      <p class="hint center">We copy your words for you. Just paste them.<br>After posting, tap <strong>Back</strong> to return here for your <span data-pct>10</span>% off.</p>
 
       <div class="divider"></div>
       <p class="err" role="alert" data-happy-err></p>
@@ -196,20 +196,12 @@
       <p class="public public--small">Prefer to share publicly? <a data-platform="google" href="#" target="_blank" rel="noopener">Google</a> or <a data-platform="yelp" href="#" target="_blank" rel="noopener">Yelp</a></p>
     </section>
 
-    <!-- 3 · Claim: sends the note to the owner, then shows the coupon -->
+    <!-- 3 · Claim: the note is texted to the owner automatically, then the coupon shows -->
     <section class="step center" data-step="claim" aria-labelledby="claimTitle">
       <button class="back" type="button" data-claim-back style="display:block">&larr; Back</button>
       <h2 id="claimTitle">Thanks for sharing!</h2>
-      <div data-claim-start>
-        <p class="lede">Claim your <span data-pct>10</span>% off. It's for today's bill, so show it before you pay.</p>
-        <button class="btn btn--red" type="button" data-claim>Claim my <span data-pct>10</span>% off</button>
-        <p class="hint">Your note goes to the owner when you claim.</p>
-      </div>
-      <div data-claim-texting hidden>
-        <p class="lede">Your text app opened with your note to the owner. <strong>Press send</strong>, then come back here.</p>
-        <button class="btn btn--red" type="button" data-sent disabled>I sent it, show my <span data-pct>10</span>% off</button>
-        <a class="link" data-sms-again href="#">Didn't open? Tap to text the owner</a>
-      </div>
+      <p class="lede">Claim your <span data-pct>10</span>% off. It's for today's bill, so show it before you pay.</p>
+      <button class="btn btn--red" type="button" data-claim>Claim my <span data-pct>10</span>% off</button>
     </section>
 
     <!-- 4 · Coupon: same reward whatever the rating, no public review required -->
@@ -238,14 +230,13 @@
 <script>
 (function(){
   /* ================= Config =================
-     google: Google search for the restaurant; the #lrd=…,3 ending opens the "Write a review" box directly.
-             (Alternative: Google Business Profile → "Ask for reviews" → https://g.page/r/XXXX/review) */
+     google: Google's own "write a review" link for Eyerus (Place ID ChIJk34qxLCp9YgRD49Y3VsiyPU); opens the review box directly.
+     The owner's number lives on the server (api/feedback.js), not in this page. */
   var CONFIG = {
     links: {
-      google: 'https://www.google.com/search?q=Eyerus+Ethiopian+Restaurant+and+Sport+Bar+Stone+Mountain#lrd=0x88f5a9b0c42a7e93:0xf5c8225bdd588f0f,3,,,',
+      google: 'https://search.google.com/local/writereview?placeid=ChIJk34qxLCp9YgRD49Y3VsiyPU',
       yelp:   'https://www.yelp.com/biz/eyerus-stone-mountain'
     },
-    ownerSms: '+17703691014',   // owner's cell; every note is texted here
     percent: 10   // must match the "Feedback" discount set up in Clover
   };
   var PLATFORMS = { google: 'Google', yelp: 'Yelp' };
@@ -301,22 +292,30 @@
 
   /* ---------- 4–5 stars ---------- */
   var draft = $('[data-draft]'), happyErr = $('[data-happy-err]');
+  function happyNote(){
+    var note = draft.value.trim();
+    if (note.length < 10){ happyErr.textContent = 'Write a few words about your visit first.'; draft.focus(); return ''; }
+    happyErr.textContent = '';
+    return note;
+  }
+  // Post on Google/Yelp: copy their words, text the note to the owner right away, then open the review box
+  // in this same tab so the phone's Back button brings them straight back here.
   $$('[data-step="happy"] a[data-platform]').forEach(function(a){
-    a.addEventListener('click', function(){
-      var t = draft.value.trim();
-      if (t){ state.leftToPost = true; saveProgress(); }
-      if (!t){ toast('Tip: write a few words first so they’re ready to paste.'); return; }
-      if (navigator.clipboard) navigator.clipboard.writeText(t).then(function(){
-        toast('Copied! Paste it into the review box on ' + PLATFORMS[a.dataset.platform] + '.');
-      }).catch(function(){});
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      var note = happyNote(); if (!note) return;
+      var data = { kind: 'rating', stars: state.stars, message: note, posted: PLATFORMS[a.dataset.platform] };
+      sendNote(data, true);
+      saveProgress(note);
+      var leave = function(){ location.href = a.href; };
+      if (navigator.clipboard) navigator.clipboard.writeText(note).then(leave, leave); else leave();
     });
   });
   $('[data-happy-next]').addEventListener('click', function(){
-    var note = draft.value.trim();
-    if (note.length < 10){ happyErr.textContent = 'Write a few words about your visit to get your ' + CONFIG.percent + '% off.'; draft.focus(); return; }
-    happyErr.textContent = '';
-    toClaim({ kind: 'rating', stars: state.stars, message: note }, 'happy', 'Thanks for the kind words! Show this to your server before you pay.');
+    var note = happyNote(); if (!note) return;
+    toClaim({ kind: 'rating', stars: state.stars, message: note }, 'happy', HAPPY_DONE);
   });
+  var HAPPY_DONE = 'Thanks for the kind words! Show this to your server before you pay.';
 
   /* ---------- 1–3 stars ---------- */
   var form = $('[data-fb-form]'), err = $('[data-err]'), write = $('[data-write]'), writeToggle = $('[data-write-toggle]'), contact = $('[data-contact]');
@@ -341,105 +340,87 @@
       : 'The owner has your note. Thank you for helping us improve. Show this to your server before you pay.');
   });
 
-  /* ---------- 3 · Claim: the note goes to the owner, then the coupon shows ---------- */
-  var claimStart = $('[data-claim-start]'), claimTexting = $('[data-claim-texting]'), sentBtn = $('[data-sent]');
+  /* ---------- 3 · Claim: the note is texted to the owner automatically, then the coupon shows ---------- */
   function toClaim(data, from, doneMsg){
     state.pending = data; state.from = from; state.doneMsg = doneMsg;
-    claimStart.hidden = false; claimTexting.hidden = true;
+    if (from === 'feedback') state.noteSent = false;
     go('claim');
   }
   $('[data-claim-back]').addEventListener('click', function(){ go(state.from); });
   $('[data-claim]').addEventListener('click', function(){
-    var btn = this; btn.disabled = true; btn.textContent = 'Sending…';
-    send(state.pending).then(function(sent){
-      btn.disabled = false; btn.innerHTML = 'Claim my ' + CONFIG.percent + '% off';
-      if (sent) return finish();
-      textOwner(state.pending);
-    });
-  });
-
-  // No SMS service set up: open the guest's own text app, addressed to the owner, note filled in.
-  // Guests who want to talk are flagged on the first line so the owner spots them at a glance.
-  function textOwner(d){
-    var lines = [
-      d.followUp ? '📞 WANTS TO TALK — ' + d.name + ' ' + d.phone : '',
-      (d.stars >= 4 ? '⭐ ' : '') + 'Eyerus feedback: ' + d.stars + '/5', d.issue && 'Issue: ' + d.issue,
-      d.message && '"' + d.message + '"',
-      'Coupon ' + current.code
-    ];
-    var href = 'sms:' + CONFIG.ownerSms + '?&body=' + encodeURIComponent(lines.filter(Boolean).join('\n'));
-    $('[data-sms-again]').href = href;
-    claimStart.hidden = true; claimTexting.hidden = false; sentBtn.disabled = true;
-    setTimeout(function(){ sentBtn.disabled = false; }, 6000);
-    location.href = href;
-  }
-  // Unlock "I sent it" once they come back from the text app.
-  document.addEventListener('visibilitychange', function(){ if (!document.hidden) sentBtn.disabled = false; });
-  sentBtn.addEventListener('click', finish);
-
-  function finish(){
+    var p = state.pending;
+    // Happy guests who tapped Post on Google already had their note texted; don't text it twice.
+    if (!state.noteSent) sendNote(p, false);
     form.reset(); write.classList.remove('is-on'); writeToggle.hidden = false; contact.classList.remove('is-on');
+    try { localStorage.removeItem('eyerus-progress'); localStorage.setItem('eyerus-claimed', today()); } catch (e) {}
     showCoupon(state.doneMsg);
-  }
+  });
 
   /* ---------- Coupon: today only, one per phone per day ----------
      The first letter tells staff the rating group without showing stars: E = 4–5 stars, N = 1–3. */
   function today(){ return new Date().toLocaleDateString('en-CA'); }   // YYYY-MM-DD, local time
-  function coupon(stars){
-    try { var saved = JSON.parse(localStorage.getItem('eyerus-coupon') || 'null'); if (saved && saved.day === today()) return saved; } catch (e) {}
+  function codeFor(stars){
+    try { var saved = JSON.parse(localStorage.getItem('eyerus-code') || 'null'); if (saved && saved.day === today()) return saved.code; } catch (e) {}
     var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', code = (stars >= 4 ? 'E' : 'N') + '-';
     for (var i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
-    var c = { code: code, day: today() };
-    try { localStorage.setItem('eyerus-coupon', JSON.stringify(c)); } catch (e) {}
-    return c;
+    try { localStorage.setItem('eyerus-code', JSON.stringify({ code: code, day: today() })); } catch (e) {}
+    return code;
   }
-  var current = null;
   function showCoupon(msg){
+    var p = state.pending, happy = p && p.stars >= 4;
     var day = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-    $('[data-code]').textContent = current.code;
+    $('[data-code]').textContent = codeFor(p.stars);
     $('[data-terms]').textContent = 'Valid today only (' + day + ') · one per table · show it before you pay.';
     $('[data-done-text]').textContent = msg;
-    var p = state.pending, happy = p && p.stars >= 4;
     $('[data-shared]').hidden = !happy;
     if (happy) $('[data-shared-note]').textContent = '“' + p.message + '”';
     go('done');
   }
 
-  /* ---------- Coming back after posting on Google/Yelp ----------
-     Google can't send people back to us, so we remember where they were:
-     switching back to this tab, or scanning the QR code again, lands them on the claim page. */
-  function saveProgress(){
-    try { localStorage.setItem('eyerus-progress', JSON.stringify({ day: today(), stars: state.stars, note: draft.value.trim() })); } catch (e) {}
+  /* ---------- Texting the owner (server side; the guest does nothing) ----------
+     keepalive lets the request finish even while the page is leaving for Google. */
+  function sendNote(data, leaving){
+    state.noteSent = true;
+    data.coupon = codeFor(data.stars);
+    try {
+      fetch('/api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), keepalive: !!leaving })
+        .then(function(r){ if (!r.ok) throw new Error(r.status); })
+        .catch(function(){ queueUnsent(data); });
+    } catch (e) { queueUnsent(data); }
   }
-  function resumeHappy(note){
-    var data = { kind: 'rating', stars: state.stars, message: note };
-    toClaim(data, 'happy', 'Thanks for the kind words! Show this to your server before you pay.');
-    toast('Welcome back! Claim your ' + CONFIG.percent + '% off below.');
+  // If a text couldn't go out (bad signal, server hiccup), try again next time the page opens on this phone.
+  function queueUnsent(data){
+    try { var q = JSON.parse(localStorage.getItem('eyerus-unsent') || '[]'); q.push(data); localStorage.setItem('eyerus-unsent', JSON.stringify(q.slice(-5))); } catch (e) {}
   }
-  document.addEventListener('visibilitychange', function(){
-    if (document.hidden || !state.leftToPost) return;
-    state.leftToPost = false;
-    var note = draft.value.trim();
-    if (note.length >= 10 && $('.step.is-on').dataset.step === 'happy') resumeHappy(note);
-  });
   try {
-    var claimed = JSON.parse(localStorage.getItem('eyerus-coupon') || 'null');
-    var progress = JSON.parse(localStorage.getItem('eyerus-progress') || 'null');
-    if (!(claimed && claimed.day === today()) && progress && progress.day === today() && progress.note){
-      state.stars = progress.stars; paint(progress.stars);
-      stars.forEach(function(s){ s.setAttribute('aria-checked', String(+s.dataset.v === progress.stars)); });
-      draft.value = progress.note;
-      resumeHappy(progress.note);
-    }
+    var unsent = JSON.parse(localStorage.getItem('eyerus-unsent') || '[]');
+    localStorage.removeItem('eyerus-unsent');
+    unsent.forEach(function(d){
+      fetch('/api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) })
+        .then(function(r){ if (!r.ok) throw new Error(r.status); }).catch(function(){ queueUnsent(d); });
+    });
   } catch (e) {}
 
-  function send(data){
-    current = coupon(data.stars);
-    data.coupon = current.code;
-    return fetch('/api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
-      .then(function(r){ return r.ok; })
-      .catch(function(){ return false; });
+  /* ---------- Coming back after posting on Google/Yelp ----------
+     Google can't send people back, so we remember where they were. Pressing Back (or scanning the
+     QR code again the same day) lands them on "Claim your 10% off" with their note already sent. */
+  function saveProgress(note){
+    try { localStorage.setItem('eyerus-progress', JSON.stringify({ day: today(), stars: state.stars, note: note })); } catch (e) {}
   }
+  function resume(){
+    try {
+      var progress = JSON.parse(localStorage.getItem('eyerus-progress') || 'null');
+      if (!progress || progress.day !== today() || localStorage.getItem('eyerus-claimed') === today()) return;
+      state.stars = progress.stars; paint(progress.stars); state.noteSent = true;
+      stars.forEach(function(s){ s.setAttribute('aria-checked', String(+s.dataset.v === progress.stars)); });
+      draft.value = progress.note;
+      toClaim({ kind: 'rating', stars: progress.stars, message: progress.note }, 'happy', HAPPY_DONE);
+      toast('Welcome back! Claim your ' + CONFIG.percent + '% off below.');
+    } catch (e) {}
+  }
+  resume();
+  // Back button from Google often restores this page from memory instead of reloading it.
+  window.addEventListener('pageshow', function(e){ if (e.persisted) resume(); });
 })();
 </script>
 </body>
