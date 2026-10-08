@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>How was your visit? · Eyerus Ethiopian Restaurant</title>
-<meta name="description" content="Tell Eyerus Ethiopian Restaurant & Sport Bar how your visit went and get 10% off next time.">
+<meta name="description" content="Tell Eyerus Ethiopian Restaurant & Sport Bar how your visit went and get a discount on today's bill.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -97,8 +97,7 @@
   .coupon .code{display:inline-block; margin-top:14px; font:600 1.25rem/1 ui-monospace, Menlo, monospace; letter-spacing:.12em; background:var(--bg); border-radius:10px; padding:12px 16px}
   .coupon .terms{color:var(--muted); font-size:.78rem; margin-top:12px}
   .shared{margin-top:14px; padding:14px 16px; border:1px solid var(--line); border-radius:12px; background:var(--field); text-align:left}
-  .shared-stars{color:var(--gold); letter-spacing:.15em; font-size:1rem}
-  .shared-note{margin:6px 0 0; font-style:italic}
+  .shared-note{margin:0; font-style:italic}
   .staff{color:var(--muted); font-size:.75rem; margin:16px 0 0}
 
   .toast{position:fixed; left:50%; bottom:24px; transform:translate(-50%, 20px); opacity:0; background:var(--cream); color:var(--bg); font-weight:600; font-size:.88rem; padding:12px 18px; border-radius:12px; transition:.25s; pointer-events:none; max-width:calc(100% - 32px); text-align:center}
@@ -116,10 +115,10 @@
   </header>
 
   <main class="card">
-    <!-- 1 · Rating: every guest gets the same question and the same 10% thank-you -->
+    <!-- 1 · Rating: every guest gets the same question and the same discount -->
     <section class="step is-on" data-step="rate" aria-labelledby="rateTitle">
       <h1 id="rateTitle">How was your visit?</h1>
-      <p class="lede center">Your honest answer helps our kitchen and team, and you'll get 10% off.</p>
+      <p class="lede center">Your honest answer helps our kitchen and team, and you'll get <span data-pct>10</span>% off today's bill.</p>
       <div class="stars" role="radiogroup" aria-label="Rate your visit from 1 to 5 stars" data-stars></div>
       <p class="star-label" aria-live="polite" data-star-label>Tap a star</p>
     </section>
@@ -201,13 +200,13 @@
       <button class="back" type="button" data-claim-back style="display:block">&larr; Back</button>
       <h2 id="claimTitle">Thanks for sharing!</h2>
       <div data-claim-start>
-        <p class="lede">Claim your 10% off. Use it today or on your next visit.</p>
-        <button class="btn btn--red" type="button" data-claim>Claim my 10% off</button>
+        <p class="lede">Claim your <span data-pct>10</span>% off. It's for today's bill, so show it before you pay.</p>
+        <button class="btn btn--red" type="button" data-claim>Claim my <span data-pct>10</span>% off</button>
         <p class="hint">Your note goes to the owner when you claim.</p>
       </div>
       <div data-claim-texting hidden>
         <p class="lede">Your text app opened with your note to the owner. <strong>Press send</strong>, then come back here.</p>
-        <button class="btn btn--red" type="button" data-sent disabled>I sent it, show my 10% off</button>
+        <button class="btn btn--red" type="button" data-sent disabled>I sent it, show my <span data-pct>10</span>% off</button>
         <a class="link" data-sms-again href="#">Didn't open? Tap to text the owner</a>
       </div>
     </section>
@@ -215,19 +214,19 @@
     <!-- 4 · Coupon: same reward whatever the rating, no public review required -->
     <section class="step center" data-step="done" aria-labelledby="doneTitle">
       <div class="done-mark"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-      <h2 id="doneTitle">Here's your 10% off!</h2>
-      <p class="lede" data-done-text style="margin:0">Use it today or on your next visit.</p>
+      <h2 id="doneTitle">Here's your <span data-pct>10</span>% off!</h2>
+      <p class="lede" data-done-text style="margin:0">Show this to your server before you pay.</p>
       <div class="coupon">
-        <div class="pct">10% off</div>
-        <div class="code" data-code>EYR-0000</div>
+        <div class="pct"><span data-pct>10</span>% off</div>
+        <div class="code" data-code>E-0000</div>
         <div class="terms" data-terms>Show this screen to your server.</div>
       </div>
-      <!-- 4–5 stars only: the server sees the compliment when applying the discount. Low ratings stay private to the owner. -->
+      <!-- 4–5 stars only: the server sees the compliment. No stars shown; the code letter tells staff the rating group
+           (E = 4–5 stars, N = 1–3). Low-rating notes stay private to the owner. -->
       <div class="shared" data-shared hidden>
-        <div class="shared-stars" data-shared-stars></div>
         <p class="shared-note" data-shared-note></p>
       </div>
-      <p class="staff">Server: apply <strong>"Feedback 10%"</strong> in Clover and type the code in the order note.</p>
+      <p class="staff">Server: apply <strong>"Feedback <span data-pct>10</span>%"</strong> in Clover and type the code in the order note.</p>
     </section>
   </main>
 
@@ -246,9 +245,10 @@
       yelp:   'https://www.yelp.com/biz/eyerus-stone-mountain'
     },
     ownerSms: '+17703691014',   // owner's cell; every note is texted here
-    couponDays: 30
+    percent: 10   // must match the "Feedback" discount set up in Clover
   };
   var PLATFORMS = { google: 'Google', yelp: 'Yelp' };
+  Array.prototype.forEach.call(document.querySelectorAll('[data-pct]'), function(el){ el.textContent = CONFIG.percent; });
   var STAR_WORDS = ['', 'Poor', 'Not great', 'Okay', 'Good', 'Excellent'];
 
   var $ = function(s, r){ return (r || document).querySelector(s); };
@@ -311,9 +311,9 @@
   });
   $('[data-happy-next]').addEventListener('click', function(){
     var note = draft.value.trim();
-    if (note.length < 10){ happyErr.textContent = 'Write a few words about your visit to get your 10% off.'; draft.focus(); return; }
+    if (note.length < 10){ happyErr.textContent = 'Write a few words about your visit to get your ' + CONFIG.percent + '% off.'; draft.focus(); return; }
     happyErr.textContent = '';
-    toClaim({ kind: 'rating', stars: state.stars, message: note }, 'happy', 'Thanks for the kind words! Use it today or on your next visit.');
+    toClaim({ kind: 'rating', stars: state.stars, message: note }, 'happy', 'Thanks for the kind words! Show this to your server before you pay.');
   });
 
   /* ---------- 1–3 stars ---------- */
@@ -335,8 +335,8 @@
     if (data.followUp && !data.name){ err.textContent = 'Add your name so the owner knows who to ask for.'; f.name.focus(); return; }
     if (data.followUp && data.phone.replace(/\D/g, '').length < 10){ err.textContent = 'Add a phone number so the owner can reach you.'; f.phone.focus(); return; }
     toClaim(data, 'feedback', data.followUp
-      ? 'The owner has your note and will reach out to ' + data.name.split(' ')[0] + ' soon.'
-      : 'The owner has your note. Thank you for helping us improve.');
+      ? 'The owner has your note and will reach out to ' + data.name.split(' ')[0] + ' soon. Show this to your server before you pay.'
+      : 'The owner has your note. Thank you for helping us improve. Show this to your server before you pay.');
   });
 
   /* ---------- 3 · Claim: the note goes to the owner, then the coupon shows ---------- */
@@ -350,7 +350,7 @@
   $('[data-claim]').addEventListener('click', function(){
     var btn = this; btn.disabled = true; btn.textContent = 'Sending…';
     send(state.pending).then(function(sent){
-      btn.disabled = false; btn.textContent = 'Claim my 10% off';
+      btn.disabled = false; btn.innerHTML = 'Claim my ' + CONFIG.percent + '% off';
       if (sent) return finish();
       textOwner(state.pending);
     });
@@ -380,31 +380,31 @@
     showCoupon(state.doneMsg);
   }
 
-  /* ---------- Coupon (one per phone, kept across refreshes) ---------- */
-  function coupon(){
-    try { var saved = JSON.parse(localStorage.getItem('eyerus-coupon') || 'null'); if (saved && saved.expires > Date.now()) return saved; } catch (e) {}
-    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', code = 'EYR-';
+  /* ---------- Coupon: today only, one per phone per day ----------
+     The first letter tells staff the rating group without showing stars: E = 4–5 stars, N = 1–3. */
+  function today(){ return new Date().toLocaleDateString('en-CA'); }   // YYYY-MM-DD, local time
+  function coupon(stars){
+    try { var saved = JSON.parse(localStorage.getItem('eyerus-coupon') || 'null'); if (saved && saved.day === today()) return saved; } catch (e) {}
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', code = (stars >= 4 ? 'E' : 'N') + '-';
     for (var i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
-    var c = { code: code, expires: Date.now() + CONFIG.couponDays * 864e5 };
+    var c = { code: code, day: today() };
     try { localStorage.setItem('eyerus-coupon', JSON.stringify(c)); } catch (e) {}
     return c;
   }
-  var current = coupon();
+  var current = null;
   function showCoupon(msg){
-    var exp = new Date(current.expires).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+    var day = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
     $('[data-code]').textContent = current.code;
-    $('[data-terms]').textContent = 'Show this screen to your server, today or on your next visit · valid until ' + exp + ' · one per table. Screenshot it to keep it.';
+    $('[data-terms]').textContent = 'Valid today only (' + day + ') · one per table · show it before you pay.';
     $('[data-done-text]').textContent = msg;
     var p = state.pending, happy = p && p.stars >= 4;
     $('[data-shared]').hidden = !happy;
-    if (happy){
-      $('[data-shared-stars]').textContent = '★'.repeat(p.stars) + '☆'.repeat(5 - p.stars);
-      $('[data-shared-note]').textContent = '“' + p.message + '”';
-    }
+    if (happy) $('[data-shared-note]').textContent = '“' + p.message + '”';
     go('done');
   }
 
   function send(data){
+    current = coupon(data.stars);
     data.coupon = current.code;
     return fetch('/api/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
       .then(function(r){ return r.ok; })
