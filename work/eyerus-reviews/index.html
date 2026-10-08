@@ -4,154 +4,155 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>How was your meal? · Eyerus Ethiopian Restaurant</title>
-<meta name="description" content="Tell Eyerus Ethiopian Restaurant & Sport Bar how your meal went and get 10% off your next visit.">
+<title>How was your visit? · Eyerus Ethiopian Restaurant</title>
+<meta name="description" content="Tell Eyerus Ethiopian Restaurant & Sport Bar how your visit went and get 10% off next time.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --yellow:#FBE104; --card:#FFFFFF; --ink:#1E1A12;
-    --red:#E0121B; --red-hover:#C30E16; --green:#0B6B35; --green-hover:#095a2c; --star:#F5B400;
-    --line:rgba(30,26,18,.14); --muted:rgba(30,26,18,.62); --field:#FBF8EE;
-    --f-display:"Fredoka", "Nunito", system-ui, sans-serif;
-    --f-ui:"Nunito", system-ui, sans-serif;
+    --bg:#160F0C; --card:#21160F; --cream:#F6EEE3;
+    --berbere:#C8402F; --gold:#E3A93B; --gold-hover:#cf9529; --green:#4FA36B;
+    --line:rgba(246,238,227,.14); --muted:rgba(246,238,227,.64); --field:rgba(246,238,227,.05);
+    --f-display:"Fraunces", Georgia, serif;
+    --f-ui:"Work Sans", system-ui, sans-serif;
   }
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
-  body{margin:0; min-height:100vh; background:var(--yellow); color:var(--ink); font:400 15px/1.55 var(--f-ui)}
-  .wrap{max-width:520px; margin:0 auto; padding:20px 16px 40px}
-  header{text-align:center; margin-bottom:14px}
-  .logo{display:block; width:min(220px, 60vw); height:auto; margin:0 auto}
-  .sub{color:var(--green); font:600 .78rem var(--f-display); letter-spacing:.14em; text-transform:uppercase; margin-top:6px}
+  body{
+    margin:0; min-height:100vh; background:var(--bg); color:var(--cream);
+    font:400 15px/1.55 var(--f-ui);
+    background-image:radial-gradient(120% 55% at 50% 0%, rgba(200,64,47,.18), transparent 62%);
+  }
+  .wrap{max-width:520px; margin:0 auto; padding:28px 16px 48px}
+  header{text-align:center; margin-bottom:22px}
+  .mark{display:flex; justify-content:center; gap:5px; margin-bottom:10px}
+  .mark i{width:22px; height:4px; border-radius:2px}
+  .mark i:nth-child(1){background:var(--green)} .mark i:nth-child(2){background:var(--gold)} .mark i:nth-child(3){background:var(--berbere)}
+  .brand{font-family:var(--f-display); font-weight:600; font-size:1.7rem; letter-spacing:.01em}
+  .sub{color:var(--muted); font-size:.76rem; letter-spacing:.14em; text-transform:uppercase; margin-top:4px}
 
-  .card{background:var(--card); border-radius:20px; padding:28px 22px; box-shadow:0 10px 30px rgba(120,95,0,.18)}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:28px 22px}
   .step{display:none}
   .step.is-on{display:block; animation:rise .35s ease both}
   @keyframes rise{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
   @media (prefers-reduced-motion:reduce){.step.is-on{animation:none}}
 
-  h1,h2{font-family:var(--f-display); font-weight:600; line-height:1.2; margin:0 0 8px}
-  h1{font-size:1.8rem; text-align:center}
-  h2{font-size:1.45rem}
+  h1,h2{font-family:var(--f-display); font-weight:500; line-height:1.2; margin:0 0 8px}
+  h1{font-size:1.75rem; text-align:center}
+  h2{font-size:1.4rem}
   h1:focus, h2:focus{outline:none}
-  .lede{color:var(--muted); margin:0 0 20px}
+  .lede{color:var(--muted); margin:0 0 22px}
   .center{text-align:center}
 
   .stars{display:flex; justify-content:center; gap:6px; margin:6px 0 10px}
-  .star{background:none; border:0; padding:4px; cursor:pointer; color:rgba(30,26,18,.14); line-height:0; border-radius:8px}
+  .star{background:none; border:0; padding:4px; cursor:pointer; color:rgba(246,238,227,.2); line-height:0; border-radius:8px}
   .star svg{width:46px; height:46px; transition:transform .15s, color .15s}
-  .star.is-lit{color:var(--star)}
+  .star.is-lit{color:var(--gold)}
   .star:hover svg{transform:scale(1.08)}
-  .star:focus-visible{outline:2px solid var(--green); outline-offset:2px}
+  .star:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
   .star-label{text-align:center; min-height:1.4em; color:var(--muted); font-size:.9rem}
 
-  .btn{display:flex; align-items:center; justify-content:center; gap:10px; width:100%; font:600 1rem var(--f-display); letter-spacing:.01em; text-decoration:none; border-radius:12px; padding:15px 18px; border:0; cursor:pointer}
-  .btn--green{background:var(--green); color:#fff}
-  .btn--green:hover{background:var(--green-hover)}
-  .btn--red{background:var(--red); color:#fff}
-  .btn--red:hover{background:var(--red-hover)}
-  .btn--ghost{background:none; color:var(--ink); border:1.5px solid var(--line)}
-  .btn--ghost:hover{border-color:rgba(30,26,18,.4)}
-  .btn--quiet{background:none; color:var(--muted); font:500 .88rem var(--f-ui); padding:10px}
-  .btn--quiet:hover{color:var(--ink)}
+  .btn{display:flex; align-items:center; justify-content:center; gap:10px; width:100%; font:600 .95rem var(--f-ui); letter-spacing:.01em; text-decoration:none; border-radius:12px; padding:15px 18px; border:0; cursor:pointer}
+  .btn--gold{background:var(--gold); color:var(--bg)}
+  .btn--gold:hover{background:var(--gold-hover)}
+  .btn--red{background:var(--berbere); color:var(--cream)}
+  .btn--ghost{background:none; color:var(--cream); border:1px solid var(--line)}
+  .btn--ghost:hover{border-color:rgba(246,238,227,.4)}
   .btn[disabled]{opacity:.55; cursor:default}
   .btn + .btn{margin-top:10px}
   .btn svg{flex:none}
-  .back{background:none; border:0; color:var(--muted); font:600 .82rem var(--f-ui); cursor:pointer; padding:0; margin-bottom:14px}
-  .back:hover{color:var(--ink)}
+  .link{display:block; margin:16px auto 0; background:none; border:0; color:var(--muted); font:500 .85rem var(--f-ui); cursor:pointer; text-decoration:underline; text-underline-offset:3px}
+  .link:hover{color:var(--cream)}
+  .back{background:none; border:0; color:var(--muted); font:500 .8rem var(--f-ui); cursor:pointer; padding:0; margin-bottom:14px}
+  .back:hover{color:var(--cream)}
 
-  label, .q{display:block; font-weight:700; font-size:.9rem; margin:18px 0 8px}
+  label{display:block; font-weight:500; font-size:.88rem; margin:18px 0 8px}
   .opt{color:var(--muted); font-weight:400}
-  textarea, input[type=text], input[type=email], input[type=tel], input[type=date], select{
-    width:100%; font:400 1rem var(--f-ui); color:var(--ink); background:var(--field);
-    border:1.5px solid var(--line); border-radius:10px; padding:12px 14px;
+  textarea, input[type=text], input[type=tel], select{
+    width:100%; font:400 1rem var(--f-ui); color:var(--cream); background:var(--field);
+    border:1px solid var(--line); border-radius:10px; padding:12px 14px;
   }
   textarea{min-height:110px; resize:vertical}
-  input:focus, textarea:focus, select:focus{outline:2px solid var(--green); outline-offset:1px; border-color:transparent}
+  input:focus, textarea:focus, select:focus{outline:2px solid var(--gold); outline-offset:1px; border-color:transparent}
+  select option{color:#000}
   .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
   @media (max-width:380px){.row{grid-template-columns:1fr}}
+  .tryanother{background:none; border:0; color:var(--gold); font:500 .82rem var(--f-ui); cursor:pointer; padding:8px 0 0}
+  .divider{height:1px; background:var(--line); margin:22px 0}
 
-  .templates{display:grid; gap:8px}
-  .tpl{text-align:left; font:400 .95rem/1.45 var(--f-ui); color:var(--ink); background:var(--field); border:1.5px solid var(--line); border-radius:12px; padding:12px 14px 12px 40px; cursor:pointer; position:relative}
-  .tpl::before{content:""; position:absolute; left:14px; top:15px; width:14px; height:14px; border-radius:50%; border:2px solid rgba(30,26,18,.3)}
-  .tpl[aria-checked="true"]{border-color:var(--green); background:rgba(11,107,53,.07)}
-  .tpl[aria-checked="true"]::before{border-color:var(--green); background:var(--green); box-shadow:inset 0 0 0 2px #fff}
-  .more{background:none; border:0; color:var(--green); font:700 .88rem var(--f-ui); cursor:pointer; padding:10px 0 0}
-  .more:hover{text-decoration:underline}
-  .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)}
-  .post{margin-top:20px; display:grid; gap:10px}
-  .toast{position:fixed; left:50%; bottom:24px; transform:translate(-50%, 20px); opacity:0; background:var(--ink); color:#fff; font-weight:700; font-size:.9rem; padding:12px 18px; border-radius:12px; transition:.25s; pointer-events:none; max-width:calc(100% - 32px); text-align:center}
+  .check{display:flex; gap:10px; align-items:flex-start; font-weight:400; margin-top:18px}
+  .check input{margin-top:3px; accent-color:var(--gold); width:18px; height:18px; flex:none}
+  .more{display:none}
+  .more.is-on{display:block}
+  .err{color:#F0937F; font-size:.85rem; min-height:1.2em; margin:10px 0 0}
+
+  .public{margin-top:22px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:.88rem; text-align:center}
+  .public a{color:var(--cream); text-underline-offset:3px}
+  .hint{color:var(--muted); font-size:.8rem; margin:8px 0 0}
+  .done-mark{width:58px; height:58px; border-radius:50%; background:var(--green); color:var(--bg); display:grid; place-items:center; margin:0 auto 16px}
+
+  .coupon{margin:20px 0 4px; padding:22px 18px; border:2px dashed var(--gold); border-radius:16px; background:rgba(227,169,59,.08); text-align:center}
+  .coupon .pct{font-family:var(--f-display); font-size:2.6rem; line-height:1; color:var(--gold); font-weight:600}
+  .coupon .code{display:inline-block; margin-top:14px; font:600 1.25rem/1 ui-monospace, Menlo, monospace; letter-spacing:.12em; background:var(--bg); border-radius:10px; padding:12px 16px}
+  .coupon .terms{color:var(--muted); font-size:.78rem; margin-top:12px}
+
+  .toast{position:fixed; left:50%; bottom:24px; transform:translate(-50%, 20px); opacity:0; background:var(--cream); color:var(--bg); font-weight:600; font-size:.88rem; padding:12px 18px; border-radius:12px; transition:.25s; pointer-events:none; max-width:calc(100% - 32px); text-align:center}
   .toast.is-on{opacity:1; transform:translate(-50%, 0)}
-
-  .check{display:flex; gap:10px; align-items:flex-start; font-weight:700; margin-top:18px}
-  .check input{margin-top:3px; accent-color:var(--green); width:18px; height:18px; flex:none}
-  .contact{display:none}
-  .contact.is-on{display:block}
-  .err{color:var(--red); font-weight:600; font-size:.88rem; min-height:1.2em; margin:10px 0 0}
-
-  .public{margin-top:22px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem; text-align:center; line-height:1.9}
-  .public a{color:var(--green); font-weight:700; text-underline-offset:3px; white-space:nowrap}
-
-  /* coupon */
-  .coupon{position:relative; margin:18px 0 6px; padding:22px 18px; border:2.5px dashed var(--red); border-radius:16px; background:#FFF9D6; text-align:center}
-  .coupon .pct{font-family:var(--f-display); font-size:3.2rem; line-height:1; color:var(--red); font-weight:700}
-  .coupon .what{font-weight:700; margin-top:4px; color:var(--green)}
-  .coupon .code{display:inline-block; margin-top:14px; font:700 1.3rem/1 ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing:.12em; background:var(--yellow); color:var(--ink); border-radius:10px; padding:12px 16px}
-  .coupon .terms{color:var(--muted); font-size:.8rem; margin-top:12px}
-  footer{text-align:center; color:rgba(30,26,18,.7); font-size:.78rem; margin-top:22px; line-height:1.7}
-  footer a{color:inherit}
+  .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0)}
+  footer{text-align:center; color:var(--muted); font-size:.72rem; margin-top:22px}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <img class="logo" src="logo.jpg" width="660" height="504" alt="Eyerus">
+    <div class="mark" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="brand">Eyerus</div>
     <div class="sub">Ethiopian Restaurant &amp; Sport Bar</div>
   </header>
 
   <main class="card">
     <!-- 1 · Rating: every guest gets the same question and the same 10% thank-you -->
     <section class="step is-on" data-step="rate" aria-labelledby="rateTitle">
-      <h1 id="rateTitle">How was your meal?</h1>
-      <p class="lede center">Rate your visit and get 10% off next time. It takes 30 seconds.</p>
+      <h1 id="rateTitle">How was your visit?</h1>
+      <p class="lede center">Your honest answer helps our kitchen and team, and you'll get 10% off your next visit.</p>
       <div class="stars" role="radiogroup" aria-label="Rate your visit from 1 to 5 stars" data-stars></div>
       <p class="star-label" aria-live="polite" data-star-label>Tap a star</p>
     </section>
 
-    <!-- 2a · 4–5 stars: pick a ready-made review, one tap to copy & post -->
+    <!-- 2a · 4–5 stars -->
     <section class="step" data-step="happy" aria-labelledby="happyTitle">
       <button class="back" type="button" data-back>&larr; Change rating</button>
-      <h2 id="happyTitle">Amesegenallo! We're so glad you enjoyed it.</h2>
-      <p class="lede">Would you tell others? Pick a review below. One tap copies it and opens Google, then just paste.</p>
+      <h2 id="happyTitle">We're so glad you enjoyed it!</h2>
+      <p class="lede">Would you share it on Google? We started a review for you. Change anything you like.</p>
 
-      <div class="templates" role="radiogroup" aria-label="Pick a review" data-templates></div>
-      <button class="more" type="button" data-more>&#8635; Show other options</button>
-
-      <label for="draft">Your review <span class="opt">(change anything you like)</span></label>
+      <label for="draft" class="sr">Your review</label>
       <textarea id="draft" data-draft placeholder="Write a few words about your visit."></textarea>
+      <button class="tryanother" type="button" data-another>&#8635; Try a different one</button>
 
-      <div class="post">
-        <a class="btn btn--green" data-platform="google" href="#" target="_blank" rel="noopener">
-          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.35 11.1H12v2.98h5.35c-.5 2.4-2.6 3.92-5.35 3.92a5.99 5.99 0 1 1 0-12c1.5 0 2.84.55 3.88 1.45l2.2-2.2A9.1 9.1 0 0 0 12 3a9 9 0 1 0 0 18c4.65 0 8.8-3.27 8.8-9 0-.3-.03-.6-.08-.9z"/></svg>
-          Copy &amp; post on Google
+      <div style="margin-top:20px">
+        <a class="btn btn--gold" data-platform="google" href="#" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.35 11.1H12v2.98h5.35c-.5 2.4-2.6 3.92-5.35 3.92a5.99 5.99 0 1 1 0-12c1.5 0 2.84.55 3.88 1.45l2.2-2.2A9.1 9.1 0 0 0 12 3a9 9 0 1 0 0 18c4.650 0 8.8-3.27 8.8-9 0-.3-.03-.6-.08-.9z"/></svg>
+          Post on Google
         </a>
-        <a class="btn btn--ghost" data-platform="yelp" href="#" target="_blank" rel="noopener">Copy &amp; post on Yelp</a>
+        <a class="btn btn--ghost" data-platform="yelp" href="#" target="_blank" rel="noopener">Post on Yelp</a>
       </div>
+      <p class="hint center">We copy your review for you. Just paste it.</p>
 
-      <button class="btn btn--red" type="button" data-claim style="margin-top:22px">Get my 10% off</button>
-      <button class="btn btn--quiet" type="button" data-to-feedback>Or send a private note to the owner</button>
+      <div class="divider"></div>
+      <button class="btn btn--red" type="button" data-claim>Get my 10% off</button>
+      <button class="link" type="button" data-to-feedback>Send a private note to the owner instead</button>
     </section>
 
-    <!-- 2b · 1–3 stars (and anyone who prefers to write privately) → owner's phone -->
+    <!-- 2b · 1–3 stars → texted to the owner -->
     <section class="step" data-step="feedback" aria-labelledby="fbTitle">
       <button class="back" type="button" data-back>&larr; Change rating</button>
       <h2 id="fbTitle" data-fb-title>We're sorry we missed the mark.</h2>
-      <p class="lede" data-fb-lede>Your note goes straight to the owner's phone. We'd like to make it right.</p>
+      <p class="lede" data-fb-lede>Tell us what happened. It goes straight to the owner.</p>
 
       <form data-fb-form novalidate>
         <label for="fbIssue">What went wrong?</label>
-        <select id="fbIssue" name="issue" required data-issue>
+        <select id="fbIssue" name="issue" data-issue>
           <option value="">Choose one…</option>
           <option>Food was cold</option>
           <option>Food didn't taste right</option>
@@ -164,80 +165,67 @@
           <option>Something else</option>
         </select>
 
-        <button class="more" type="button" data-write-toggle aria-expanded="false" aria-controls="fbWrite">+ Write more about it <span class="opt">(optional)</span></button>
-        <div class="contact" id="fbWrite" data-write>
+        <button class="tryanother" type="button" data-write-toggle>+ Write more <span class="opt">(optional)</span></button>
+        <div class="more" data-write>
           <label for="fbText" class="sr">Tell us more</label>
           <textarea id="fbText" name="message" placeholder="What happened, and what would have made it right?"></textarea>
         </div>
 
-        <label for="fbType">Order type <span class="opt">(optional)</span></label>
-        <select id="fbType" name="orderType">
-          <option value="">Choose…</option>
-          <option>Dine-in</option><option>Bar</option><option>Takeout</option><option>Delivery</option><option>Catering / event</option>
-        </select>
-
         <label class="check"><input type="checkbox" name="followUp" data-follow> I'd like to talk with the owner</label>
-        <div class="contact" data-contact>
-          <label for="fbName">Name</label>
-          <input id="fbName" name="name" type="text" autocomplete="name">
+        <div class="more" data-contact>
           <div class="row">
+            <div>
+              <label for="fbName">Name</label>
+              <input id="fbName" name="name" type="text" autocomplete="name">
+            </div>
             <div>
               <label for="fbPhone">Phone</label>
               <input id="fbPhone" name="phone" type="tel" autocomplete="tel">
-            </div>
-            <div>
-              <label for="fbEmail">Email <span class="opt">(optional)</span></label>
-              <input id="fbEmail" name="email" type="email" autocomplete="email">
             </div>
           </div>
         </div>
 
         <p class="err" role="alert" data-err></p>
-        <button class="btn btn--red" type="submit" data-submit>Send &amp; get my 10% off</button>
+        <button class="btn btn--red" type="submit" data-submit>Send to the owner</button>
       </form>
 
       <!-- Kept visible on purpose: every guest can always post publicly (Google / FTC rules). -->
-      <p class="public" data-public>Prefer to share publicly? Review us on</p>
+      <p class="public">Prefer to share publicly? <a data-platform="google" href="#" target="_blank" rel="noopener">Google</a> or <a data-platform="yelp" href="#" target="_blank" rel="noopener">Yelp</a></p>
     </section>
 
-    <!-- 3 · Coupon: same reward whatever the rating, no review required -->
-    <section class="step center" data-step="coupon" aria-labelledby="couponTitle">
-      <h2 id="couponTitle">Thank you for your feedback!</h2>
-      <p class="lede" data-done-text style="margin-bottom:0">Here's 10% off your next visit.</p>
+    <!-- 3 · Thank you + coupon: same reward whatever the rating, no review required -->
+    <section class="step center" data-step="done" aria-labelledby="doneTitle">
+      <div class="done-mark"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h2 id="doneTitle">Thank you.</h2>
+      <p class="lede" data-done-text style="margin:0">Here's 10% off your next visit.</p>
       <div class="coupon">
         <div class="pct">10% off</div>
-        <div class="what">your next meal at Eyerus</div>
         <div class="code" data-code>EYR-0000</div>
-        <div class="terms" data-terms>Show this screen to your server. Screenshot it to keep it.</div>
+        <div class="terms" data-terms>Show this screen to your server.</div>
       </div>
-      <p class="public" data-public style="border:0; margin-top:4px" data-coupon-public>Haven't shared yet? Review us on</p>
     </section>
   </main>
 
-  <footer>
-    Eyerus Ethiopian Restaurant &amp; Sport Bar<br>
-    <a href="https://maps.google.com/?q=5038+Memorial+Dr+Stone+Mountain+GA+30083" target="_blank" rel="noopener">5038 Memorial Dr, Stone Mountain, GA 30083</a>
-  </footer>
+  <footer>Eyerus Ethiopian Restaurant &amp; Sport Bar · 5038 Memorial Dr, Stone Mountain</footer>
 </div>
 <div class="toast" role="status" aria-live="polite" data-toast></div>
 
 <script>
 (function(){
   /* ================= Config =================
-     google: the profile's share link works. For a link that opens the review box directly, use
+     google: for a link that opens the review box directly, use
              Google Business Profile → "Ask for reviews" → copy link (https://g.page/r/XXXX/review). */
   var CONFIG = {
-    name: 'Eyerus Ethiopian Restaurant & Sport Bar',
     links: {
       google: 'https://share.google/0RxYrwtWJgoclpED6',
       yelp:   'https://www.yelp.com/biz/eyerus-stone-mountain'
     },
-    ownerSms: '+17703691014',   // owner's cell; guests' low-rating notes are texted here
+    ownerSms: '+17703691014',   // owner's cell; every 1–3 star note is texted here
     couponDays: 30
   };
   var PLATFORMS = { google: 'Google', yelp: 'Yelp' };
   var STAR_WORDS = ['', 'Poor', 'Not great', 'Okay', 'Good', 'Excellent'];
-  // Ready-made reviews. Guests pick one (or edit it); shown in random order so posts don't all look alike.
+  // Ready-made reviews; each guest starts with a random one so posts don't all look alike.
   var TEMPLATES = {
     5: [
       'Excellent meal at Eyerus! The food was full of flavor and the staff made us feel at home. We will be back.',
@@ -260,20 +248,10 @@
 
   var $ = function(s, r){ return (r || document).querySelector(s); };
   var $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  var state = { stars: 0, pool: [], page: 0 };
+  var state = { stars: 0, pool: [], i: 0 };
 
-  /* ---------- Public review links (every guest sees them) ---------- */
-  $$('[data-public]').forEach(function(p){
-    Object.keys(PLATFORMS).forEach(function(k, i){
-      var a = document.createElement('a');
-      a.dataset.platform = k; a.target = '_blank'; a.rel = 'noopener'; a.textContent = PLATFORMS[k];
-      p.appendChild(document.createTextNode(i === 0 ? ' ' : ' or '));
-      p.appendChild(a);
-    });
-  });
   $$('a[data-platform]').forEach(function(a){ a.href = CONFIG.links[a.dataset.platform]; });
 
-  /* ---------- Steps ---------- */
   function go(name){
     $$('.step').forEach(function(s){ s.classList.toggle('is-on', s.dataset.step === name); });
     var h = $('[data-step="' + name + '"] h1, [data-step="' + name + '"] h2');
@@ -309,49 +287,29 @@
   });
   starsEl.addEventListener('mouseleave', function(){ paint(state.stars); });
 
+  var draft = $('[data-draft]');
   function rate(v){
     var changed = v !== state.stars;
     state.stars = v; paint(v);
     stars.forEach(function(s){ s.setAttribute('aria-checked', String(+s.dataset.v === v)); });
-    if (v >= 4 && changed) loadTemplates();
+    if (v >= 4 && changed){ state.pool = shuffle(TEMPLATES[v]); state.i = 0; draft.value = state.pool[0]; }
     setTimeout(function(){ v >= 4 ? go('happy') : openFeedback(false); }, 260);
   }
 
-  /* ---------- Happy path: pick a template → copy & open Google/Yelp ---------- */
-  var draft = $('[data-draft]'), tplEl = $('[data-templates]');
+  /* ---------- Happy path ---------- */
   function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  function loadTemplates(){ state.pool = shuffle(TEMPLATES[state.stars]); state.page = 0; renderTemplates(); }
-  function renderTemplates(){
-    var start = state.page * 3 % state.pool.length;
-    var shown = state.pool.slice(start, start + 3);
-    if (shown.length < 3) shown = shown.concat(state.pool.slice(0, 3 - shown.length));
-    tplEl.innerHTML = '';
-    shown.forEach(function(text, j){
-      var t = document.createElement('button');
-      t.type = 'button'; t.className = 'tpl'; t.textContent = text; t.setAttribute('role', 'radio');
-      t.addEventListener('click', function(){ pick(t); });
-      tplEl.appendChild(t);
-      if (j === 0) pick(t);
-    });
-  }
-  function pick(t){
-    $$('.tpl', tplEl).forEach(function(x){ x.setAttribute('aria-checked', String(x === t)); });
-    draft.value = t.textContent;
-  }
-  $('[data-more]').addEventListener('click', function(){ state.page++; renderTemplates(); });
+  $('[data-another]').addEventListener('click', function(){ state.i = (state.i + 1) % state.pool.length; draft.value = state.pool[state.i]; });
 
   $$('[data-step="happy"] a[data-platform]').forEach(function(a){
     a.addEventListener('click', function(){
       var t = draft.value.trim();
-      if (!t){ toast('Write a few words first, then tap again.'); return; }
-      if (navigator.clipboard) navigator.clipboard.writeText(t).then(function(){
+      if (t && navigator.clipboard) navigator.clipboard.writeText(t).then(function(){
         toast('Copied! Paste it into the review box on ' + PLATFORMS[a.dataset.platform] + '.');
       }).catch(function(){});
     });
   });
   $('[data-claim]').addEventListener('click', function(){
-    // Lets the owner know about happy ratings too, when the optional SMS service is set up. Fire-and-forget.
-    send({ kind: 'rating', stars: state.stars, message: draft.value.trim() || '(no comment)' });
+    send({ kind: 'rating', stars: state.stars, message: draft.value.trim() || '(no comment)' }); // only reaches the owner if the optional SMS service is set up
     showCoupon('Here’s 10% off your next visit. We hope to see you again soon!');
   });
   $('[data-to-feedback]').addEventListener('click', function(){ openFeedback(true); });
@@ -359,15 +317,12 @@
   /* ---------- Private feedback → owner's phone ---------- */
   function openFeedback(fromHappy){
     $('[data-fb-title]').textContent = fromHappy ? 'Send a note to the owner.' : "We're sorry we missed the mark.";
-    $('[data-fb-lede]').textContent = fromHappy
-      ? 'Compliments, ideas, anything. It goes straight to the owner’s phone.'
-      : "Your note goes straight to the owner's phone. We'd like to make it right.";
+    $('[data-fb-lede]').textContent = fromHappy ? 'Compliments, ideas, anything. It goes straight to the owner.' : 'Tell us what happened. It goes straight to the owner.';
     go('feedback');
   }
 
-  var form = $('[data-fb-form]'), err = $('[data-err]'), contact = $('[data-contact]');
-  var write = $('[data-write]'), writeToggle = $('[data-write-toggle]');
-  function openWrite(){ write.classList.add('is-on'); writeToggle.hidden = true; writeToggle.setAttribute('aria-expanded', 'true'); }
+  var form = $('[data-fb-form]'), err = $('[data-err]'), write = $('[data-write]'), writeToggle = $('[data-write-toggle]'), contact = $('[data-contact]');
+  function openWrite(){ write.classList.add('is-on'); writeToggle.hidden = true; }
   writeToggle.addEventListener('click', function(){ openWrite(); form.elements.message.focus(); });
   $('[data-issue]').addEventListener('change', function(e){ if (e.target.value === 'Something else') openWrite(); });
   $('[data-follow]').addEventListener('change', function(e){ contact.classList.toggle('is-on', e.target.checked); });
@@ -376,9 +331,8 @@
     e.preventDefault(); err.textContent = '';
     var f = form.elements;
     var data = {
-      kind: 'feedback', stars: state.stars, issue: f.issue.value,
-      message: f.message.value.trim(), orderType: f.orderType.value,
-      followUp: f.followUp.checked, name: f.name.value.trim(), phone: f.phone.value.trim(), email: f.email.value.trim()
+      kind: 'feedback', stars: state.stars, issue: f.issue.value, message: f.message.value.trim(),
+      followUp: f.followUp.checked, name: f.name.value.trim(), phone: f.phone.value.trim()
     };
     if (!data.issue){ err.textContent = 'Please choose what went wrong.'; f.issue.focus(); return; }
     if (data.issue === 'Something else' && !data.message){ err.textContent = 'Please tell us a little about what happened.'; f.message.focus(); return; }
@@ -387,10 +341,10 @@
 
     var btn = $('[data-submit]'); btn.disabled = true; btn.textContent = 'Sending…';
     send(data).then(function(sent){
-      btn.disabled = false; btn.textContent = 'Send & get my 10% off';
-      var first = data.name.split(' ')[0];
+      btn.disabled = false; btn.textContent = 'Send to the owner';
       if (!sent) textOwner(data);
-      form.reset(); contact.classList.remove('is-on'); write.classList.remove('is-on'); writeToggle.hidden = false;
+      var first = data.name.split(' ')[0];
+      form.reset(); write.classList.remove('is-on'); writeToggle.hidden = false; contact.classList.remove('is-on');
       showCoupon(!sent ? 'Your text app opened with your note to the owner. Press send, then show this to your server.'
         : data.followUp ? 'The owner has your note and will reach out to ' + first + ' soon.'
         : 'The owner has your note. Thank you for helping us improve.');
@@ -403,7 +357,7 @@
     var lines = [
       d.followUp ? '📞 WANTS TO TALK — ' + d.name + ' ' + d.phone : '',
       'Eyerus feedback: ' + d.stars + '/5', 'Issue: ' + d.issue,
-      d.orderType && 'Order: ' + d.orderType, d.message && '"' + d.message + '"',
+      d.message && '"' + d.message + '"',
       'Coupon ' + current.code
     ];
     location.href = 'sms:' + CONFIG.ownerSms + '?&body=' + encodeURIComponent(lines.filter(Boolean).join('\n'));
@@ -420,11 +374,11 @@
   }
   var current = coupon();
   function showCoupon(msg){
-    var exp = new Date(current.expires).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    var exp = new Date(current.expires).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
     $('[data-code]').textContent = current.code;
-    $('[data-terms]').textContent = 'Show this screen to your server · valid until ' + exp + ' · one per table, not combinable with other offers. Screenshot it to keep it.';
+    $('[data-terms]').textContent = 'Show this screen to your server · valid until ' + exp + ' · one per table. Screenshot it to keep it.';
     $('[data-done-text]').textContent = msg;
-    go('coupon');
+    go('done');
   }
 
   function send(data){
