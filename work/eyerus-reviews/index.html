@@ -90,9 +90,6 @@
   .public{margin-top:22px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:.88rem; text-align:center}
   .public a{color:var(--cream); text-underline-offset:3px}
   .public--small{margin-top:28px; padding-top:12px; font-size:.72rem; opacity:.75}
-  .share{margin-top:22px; padding-top:20px; border-top:1px solid var(--line)}
-  .share p{margin:0 0 12px; font-weight:500}
-  .comeback{color:var(--muted); font-size:.75rem; margin:16px 0 0}
   .hint{color:var(--muted); font-size:.8rem; margin:8px 0 0}
   .done-mark{width:58px; height:58px; border-radius:50%; background:var(--green); color:var(--bg); display:grid; place-items:center; margin:0 auto 16px}
 
@@ -127,7 +124,7 @@
       <p class="star-label" aria-live="polite" data-star-label>Tap a star</p>
     </section>
 
-    <!-- 2a · 4–5 stars: write a note (sharing on Google/Yelp comes after the coupon) -->
+    <!-- 2a · 4–5 stars: write a note; optionally share it on Google/Yelp -->
     <section class="step" data-step="happy" aria-labelledby="happyTitle">
       <button class="back" type="button" data-back>&larr; Change rating</button>
       <h2 id="happyTitle">We're so glad you enjoyed it!</h2>
@@ -136,6 +133,16 @@
       <label for="draft" class="sr">Your note</label>
       <textarea id="draft" data-draft placeholder="e.g. The doro wat was great, the staff were friendly and it was a fun place to watch the game."></textarea>
 
+      <div style="margin-top:20px">
+        <a class="btn btn--gold" data-platform="google" href="#" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.35 11.1H12v2.98h5.35c-.5 2.4-2.6 3.92-5.35 3.92a5.99 5.99 0 1 1 0-12c1.5 0 2.84.55 3.88 1.45l2.2-2.2A9.1 9.1 0 0 0 12 3a9 9 0 1 0 0 18c4.65 0 8.8-3.27 8.8-9 0-.3-.03-.6-.08-.9z"/></svg>
+          Post on Google
+        </a>
+        <a class="btn btn--ghost" data-platform="yelp" href="#" target="_blank" rel="noopener">Post on Yelp</a>
+      </div>
+      <p class="hint center">We copy your words for you. Just paste them.<br>When you're done, close the Google tab or scan the QR code again to come back for your <span data-pct>10</span>% off.</p>
+
+      <div class="divider"></div>
       <p class="err" role="alert" data-happy-err></p>
       <button class="btn btn--red" type="button" data-happy-next>Next</button>
     </section>
@@ -220,16 +227,6 @@
       <div class="shared" data-shared hidden>
         <p class="shared-note" data-shared-note></p>
       </div>
-      <!-- Sharing comes after the coupon, so guests never have to find their way back to claim it. -->
-      <div class="share" data-share hidden>
-        <p>Want to share it on Google too? We'll copy your note.</p>
-        <a class="btn btn--gold" data-platform="google" href="#" target="_blank" rel="noopener">
-          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.35 11.1H12v2.98h5.35c-.5 2.4-2.6 3.92-5.35 3.92a5.99 5.99 0 1 1 0-12c1.5 0 2.84.55 3.88 1.45l2.2-2.2A9.1 9.1 0 0 0 12 3a9 9 0 1 0 0 18c4.65 0 8.8-3.27 8.8-9 0-.3-.03-.6-.08-.9z"/></svg>
-          Post on Google
-        </a>
-        <a class="btn btn--ghost" data-platform="yelp" href="#" target="_blank" rel="noopener">Post on Yelp</a>
-      </div>
-      <p class="comeback">Lost this page? Scan the QR code again and your coupon will be right here.</p>
       <p class="staff">Server: apply <strong>"Feedback <span data-pct>10</span>%"</strong> in Clover and type the code in the order note.</p>
     </section>
   </main>
@@ -304,10 +301,12 @@
 
   /* ---------- 4–5 stars ---------- */
   var draft = $('[data-draft]'), happyErr = $('[data-happy-err]');
-  $$('[data-share] a[data-platform]').forEach(function(a){
+  $$('[data-step="happy"] a[data-platform]').forEach(function(a){
     a.addEventListener('click', function(){
-      var t = state.pending && state.pending.message;
-      if (t && navigator.clipboard) navigator.clipboard.writeText(t).then(function(){
+      var t = draft.value.trim();
+      if (t){ state.leftToPost = true; saveProgress(); }
+      if (!t){ toast('Tip: write a few words first so they’re ready to paste.'); return; }
+      if (navigator.clipboard) navigator.clipboard.writeText(t).then(function(){
         toast('Copied! Paste it into the review box on ' + PLATFORMS[a.dataset.platform] + '.');
       }).catch(function(){});
     });
@@ -402,18 +401,35 @@
     $('[data-done-text]').textContent = msg;
     var p = state.pending, happy = p && p.stars >= 4;
     $('[data-shared]').hidden = !happy;
-    $('[data-share]').hidden = !happy;
     if (happy) $('[data-shared-note]').textContent = '“' + p.message + '”';
-    try { localStorage.setItem('eyerus-coupon', JSON.stringify({ code: current.code, day: current.day, stars: p.stars, note: happy ? p.message : '' })); } catch (e) {}
     go('done');
   }
 
-  // Came back (e.g. after posting on Google, or by scanning the QR again)? Show today's coupon straight away.
+  /* ---------- Coming back after posting on Google/Yelp ----------
+     Google can't send people back to us, so we remember where they were:
+     switching back to this tab, or scanning the QR code again, lands them on the claim page. */
+  function saveProgress(){
+    try { localStorage.setItem('eyerus-progress', JSON.stringify({ day: today(), stars: state.stars, note: draft.value.trim() })); } catch (e) {}
+  }
+  function resumeHappy(note){
+    var data = { kind: 'rating', stars: state.stars, message: note };
+    toClaim(data, 'happy', 'Thanks for the kind words! Show this to your server before you pay.');
+    toast('Welcome back! Claim your ' + CONFIG.percent + '% off below.');
+  }
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden || !state.leftToPost) return;
+    state.leftToPost = false;
+    var note = draft.value.trim();
+    if (note.length >= 10 && $('.step.is-on').dataset.step === 'happy') resumeHappy(note);
+  });
   try {
-    var back = JSON.parse(localStorage.getItem('eyerus-coupon') || 'null');
-    if (back && back.day === today() && back.stars){
-      current = back; state.pending = { stars: back.stars, message: back.note };
-      showCoupon('Welcome back! Show this to your server before you pay.');
+    var claimed = JSON.parse(localStorage.getItem('eyerus-coupon') || 'null');
+    var progress = JSON.parse(localStorage.getItem('eyerus-progress') || 'null');
+    if (!(claimed && claimed.day === today()) && progress && progress.day === today() && progress.note){
+      state.stars = progress.stars; paint(progress.stars);
+      stars.forEach(function(s){ s.setAttribute('aria-checked', String(+s.dataset.v === progress.stars)); });
+      draft.value = progress.note;
+      resumeHappy(progress.note);
     }
   } catch (e) {}
 
