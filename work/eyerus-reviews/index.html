@@ -78,9 +78,6 @@
   select option{color:#000}
   .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
   @media (max-width:380px){.row{grid-template-columns:1fr}}
-  .chips{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px}
-  .chip{font:500 .85rem var(--f-ui); color:var(--cream); background:var(--field); border:1px solid var(--line); border-radius:999px; padding:8px 13px; cursor:pointer}
-  .chip[aria-pressed="true"]{background:var(--gold); border-color:var(--gold); color:var(--bg)}
   .tryanother{background:none; border:0; color:var(--gold); font:500 .82rem var(--f-ui); cursor:pointer; padding:8px 0 0}
   .divider{height:1px; background:var(--line); margin:22px 0}
 
@@ -118,41 +115,39 @@
     <!-- 1 · Rating: every guest gets the same question and the same 10% thank-you -->
     <section class="step is-on" data-step="rate" aria-labelledby="rateTitle">
       <h1 id="rateTitle">How was your visit?</h1>
-      <p class="lede center">Your honest answer helps our kitchen and team, and you'll get 10% off your next visit.</p>
+      <p class="lede center">Your honest answer helps our kitchen and team, and you'll get 10% off.</p>
       <div class="stars" role="radiogroup" aria-label="Rate your visit from 1 to 5 stars" data-stars></div>
       <p class="star-label" aria-live="polite" data-star-label>Tap a star</p>
     </section>
 
-    <!-- 2a · 4–5 stars -->
+    <!-- 2a · 4–5 stars: write a note; optionally share it on Google/Yelp -->
     <section class="step" data-step="happy" aria-labelledby="happyTitle">
       <button class="back" type="button" data-back>&larr; Change rating</button>
       <h2 id="happyTitle">We're so glad you enjoyed it!</h2>
-      <p class="lede">Tell us what you enjoyed. Tap an idea to add it, or write your own.</p>
-
-      <div class="chips" role="group" aria-label="Ideas" data-ideas></div>
+      <p class="lede">Tell us what you enjoyed, in a few words.</p>
 
       <label for="draft" class="sr">Your note</label>
-      <textarea id="draft" data-draft placeholder="What did you enjoy about your visit?"></textarea>
+      <textarea id="draft" data-draft placeholder="e.g. The doro wat was great, the staff were friendly and it was a fun place to watch the game."></textarea>
 
       <div style="margin-top:20px">
         <a class="btn btn--gold" data-platform="google" href="#" target="_blank" rel="noopener">
-          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.35 11.1H12v2.98h5.35c-.5 2.4-2.6 3.92-5.35 3.92a5.99 5.99 0 1 1 0-12c1.5 0 2.84.55 3.88 1.45l2.2-2.2A9.1 9.1 0 0 0 12 3a9 9 0 1 0 0 18c4.650 0 8.8-3.27 8.8-9 0-.3-.03-.6-.08-.9z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.35 11.1H12v2.98h5.35c-.5 2.4-2.6 3.92-5.35 3.92a5.99 5.99 0 1 1 0-12c1.5 0 2.84.55 3.88 1.45l2.2-2.2A9.1 9.1 0 0 0 12 3a9 9 0 1 0 0 18c4.65 0 8.8-3.27 8.8-9 0-.3-.03-.6-.08-.9z"/></svg>
           Post on Google
         </a>
         <a class="btn btn--ghost" data-platform="yelp" href="#" target="_blank" rel="noopener">Post on Yelp</a>
       </div>
-      <p class="hint center">Want to share it publicly? We copy your words for you. Just paste them.</p>
+      <p class="hint center">We copy your words for you. Just paste them.</p>
 
       <div class="divider"></div>
-      <p class="err" role="alert" data-claim-err></p>
-      <button class="btn btn--red" type="button" data-claim>Send to the owner &amp; get 10% off</button>
+      <p class="err" role="alert" data-happy-err></p>
+      <button class="btn btn--red" type="button" data-happy-next>Next</button>
     </section>
 
     <!-- 2b · 1–3 stars → texted to the owner -->
     <section class="step" data-step="feedback" aria-labelledby="fbTitle">
       <button class="back" type="button" data-back>&larr; Change rating</button>
-      <h2 id="fbTitle" data-fb-title>We're sorry we missed the mark.</h2>
-      <p class="lede" data-fb-lede>Tell us what happened. It goes straight to the owner.</p>
+      <h2 id="fbTitle">We're sorry we missed the mark.</h2>
+      <p class="lede">Tell us what happened. It goes straight to the owner.</p>
 
       <form data-fb-form novalidate>
         <label for="fbIssue">What went wrong?</label>
@@ -190,26 +185,34 @@
         </div>
 
         <p class="err" role="alert" data-err></p>
-        <button class="btn btn--red" type="submit" data-submit>Send to the owner</button>
+        <button class="btn btn--red" type="submit">Next</button>
       </form>
 
       <!-- Kept visible on purpose: every guest can always post publicly (Google / FTC rules). -->
       <p class="public">Prefer to share publicly? <a data-platform="google" href="#" target="_blank" rel="noopener">Google</a> or <a data-platform="yelp" href="#" target="_blank" rel="noopener">Yelp</a></p>
     </section>
 
-    <!-- 2c · Free texting setup: the note goes from the guest's own text app; coupon after they come back -->
-    <section class="step center" data-step="texting" aria-labelledby="textingTitle">
-      <h2 id="textingTitle">Almost done!</h2>
-      <p class="lede">Your text app opened with your note to the owner. <strong>Press send</strong>, then come back here for your 10% off.</p>
-      <button class="btn btn--red" type="button" data-sent disabled>I sent it, show my 10% off</button>
-      <a class="link" data-sms-again href="#">Didn't open? Tap to text the owner</a>
+    <!-- 3 · Claim: sends the note to the owner, then shows the coupon -->
+    <section class="step center" data-step="claim" aria-labelledby="claimTitle">
+      <button class="back" type="button" data-claim-back style="display:block">&larr; Back</button>
+      <h2 id="claimTitle">Thanks for sharing!</h2>
+      <div data-claim-start>
+        <p class="lede">Claim your 10% off. Use it today or on your next visit.</p>
+        <button class="btn btn--red" type="button" data-claim>Claim my 10% off</button>
+        <p class="hint">Your note goes to the owner when you claim.</p>
+      </div>
+      <div data-claim-texting hidden>
+        <p class="lede">Your text app opened with your note to the owner. <strong>Press send</strong>, then come back here.</p>
+        <button class="btn btn--red" type="button" data-sent disabled>I sent it, show my 10% off</button>
+        <a class="link" data-sms-again href="#">Didn't open? Tap to text the owner</a>
+      </div>
     </section>
 
-    <!-- 3 · Thank you + coupon: same reward whatever the rating, no review required -->
+    <!-- 4 · Coupon: same reward whatever the rating, no public review required -->
     <section class="step center" data-step="done" aria-labelledby="doneTitle">
       <div class="done-mark"><svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-      <h2 id="doneTitle">Thank you.</h2>
-      <p class="lede" data-done-text style="margin:0">Here's 10% off your next visit.</p>
+      <h2 id="doneTitle">Here's your 10% off!</h2>
+      <p class="lede" data-done-text style="margin:0">Use it today or on your next visit.</p>
       <div class="coupon">
         <div class="pct">10% off</div>
         <div class="code" data-code>EYR-0000</div>
@@ -232,29 +235,15 @@
       google: 'https://share.google/0RxYrwtWJgoclpED6',
       yelp:   'https://www.yelp.com/biz/eyerus-stone-mountain'
     },
-    ownerSms: '+17703691014',   // owner's cell; every 1–3 star note is texted here
+    ownerSms: '+17703691014',   // owner's cell; every note is texted here
     couponDays: 30
   };
   var PLATFORMS = { google: 'Google', yelp: 'Yelp' };
   var STAR_WORDS = ['', 'Poor', 'Not great', 'Okay', 'Good', 'Excellent'];
-  // Idea buttons: tapping one adds its sentence to the guest's note (tap again to remove it).
-  var IDEAS = {
-    'Doro wat': 'The doro wat was delicious.',
-    'Kitfo': 'The kitfo was amazing.',
-    'Tibs': 'The tibs were full of flavor.',
-    'Veggie combo': 'Loved the veggie combo.',
-    'Injera': 'The injera was fresh and soft.',
-    'Coffee': 'Great Ethiopian coffee.',
-    'Friendly staff': 'The staff were friendly and welcoming.',
-    'Quick service': 'Our food came out quickly.',
-    'Watching the game': 'Great spot to watch the game.',
-    'Drinks & bar': 'Good drinks at the bar.',
-    'Good value': 'Great value for the price.'
-  };
 
   var $ = function(s, r){ return (r || document).querySelector(s); };
   var $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
-  var state = { stars: 0 };
+  var state = { stars: 0, pending: null, from: 'rate' };
 
   $$('a[data-platform]').forEach(function(a){ a.href = CONFIG.links[a.dataset.platform]; });
 
@@ -293,61 +282,31 @@
   });
   starsEl.addEventListener('mouseleave', function(){ paint(state.stars); });
 
-  var draft = $('[data-draft]');
   function rate(v){
     state.stars = v; paint(v);
     stars.forEach(function(s){ s.setAttribute('aria-checked', String(+s.dataset.v === v)); });
-    setTimeout(function(){ v >= 4 ? go('happy') : openFeedback(false); }, 260);
+    setTimeout(function(){ go(v >= 4 ? 'happy' : 'feedback'); }, 260);
   }
 
-  /* ---------- Happy path ---------- */
-  Object.keys(IDEAS).forEach(function(name){
-    var c = document.createElement('button');
-    c.type = 'button'; c.className = 'chip'; c.textContent = name; c.setAttribute('aria-pressed', 'false');
-    c.addEventListener('click', function(){
-      var line = IDEAS[name], text = draft.value;
-      if (text.indexOf(line) > -1){
-        draft.value = text.replace(line, '').replace(/\s{2,}/g, ' ').trim();
-        c.setAttribute('aria-pressed', 'false');
-      } else {
-        draft.value = (text.trim() ? text.trim() + ' ' : '') + line;
-        c.setAttribute('aria-pressed', 'true');
-      }
-      claimErr.textContent = '';
-    });
-    $('[data-ideas]').appendChild(c);
-  });
-  var claimErr = $('[data-claim-err]');
-
+  /* ---------- 4–5 stars ---------- */
+  var draft = $('[data-draft]'), happyErr = $('[data-happy-err]');
   $$('[data-step="happy"] a[data-platform]').forEach(function(a){
     a.addEventListener('click', function(){
       var t = draft.value.trim();
-      if (!t){ toast('Tip: tap a few ideas first so your review is ready to paste.'); return; }
+      if (!t){ toast('Tip: write a few words first so they’re ready to paste.'); return; }
       if (navigator.clipboard) navigator.clipboard.writeText(t).then(function(){
         toast('Copied! Paste it into the review box on ' + PLATFORMS[a.dataset.platform] + '.');
       }).catch(function(){});
     });
   });
-  // The 10% comes only after the guest writes a note, and that note goes to the owner.
-  $('[data-claim]').addEventListener('click', function(){
+  $('[data-happy-next]').addEventListener('click', function(){
     var note = draft.value.trim();
-    if (note.length < 10){ claimErr.textContent = 'Write a few words (or tap an idea) to get your 10% off.'; draft.focus(); return; }
-    var btn = this; btn.disabled = true;
-    var data = { kind: 'rating', stars: state.stars, message: note };
-    send(data).then(function(sent){
-      btn.disabled = false;
-      var msg = 'Thanks for the kind words! Here’s 10% off your next visit.';
-      sent ? showCoupon(msg) : textOwner(data, msg);
-    });
+    if (note.length < 10){ happyErr.textContent = 'Write a few words about your visit to get your 10% off.'; draft.focus(); return; }
+    happyErr.textContent = '';
+    toClaim({ kind: 'rating', stars: state.stars, message: note }, 'happy', 'Thanks for the kind words! Use it today or on your next visit.');
   });
 
-  /* ---------- Private feedback → owner's phone ---------- */
-  function openFeedback(fromHappy){
-    $('[data-fb-title]').textContent = fromHappy ? 'Send a note to the owner.' : "We're sorry we missed the mark.";
-    $('[data-fb-lede]').textContent = fromHappy ? 'Compliments, ideas, anything. It goes straight to the owner.' : 'Tell us what happened. It goes straight to the owner.';
-    go('feedback');
-  }
-
+  /* ---------- 1–3 stars ---------- */
   var form = $('[data-fb-form]'), err = $('[data-err]'), write = $('[data-write]'), writeToggle = $('[data-write-toggle]'), contact = $('[data-contact]');
   function openWrite(){ write.classList.add('is-on'); writeToggle.hidden = true; }
   writeToggle.addEventListener('click', function(){ openWrite(); form.elements.message.focus(); });
@@ -365,22 +324,31 @@
     if (data.issue === 'Something else' && !data.message){ err.textContent = 'Please tell us a little about what happened.'; f.message.focus(); return; }
     if (data.followUp && !data.name){ err.textContent = 'Add your name so the owner knows who to ask for.'; f.name.focus(); return; }
     if (data.followUp && data.phone.replace(/\D/g, '').length < 10){ err.textContent = 'Add a phone number so the owner can reach you.'; f.phone.focus(); return; }
+    toClaim(data, 'feedback', data.followUp
+      ? 'The owner has your note and will reach out to ' + data.name.split(' ')[0] + ' soon.'
+      : 'The owner has your note. Thank you for helping us improve.');
+  });
 
-    var btn = $('[data-submit]'); btn.disabled = true; btn.textContent = 'Sending…';
-    send(data).then(function(sent){
-      btn.disabled = false; btn.textContent = 'Send to the owner';
-      var first = data.name.split(' ')[0];
-      var msg = data.followUp ? 'The owner has your note and will reach out to ' + first + ' soon.' : 'The owner has your note. Thank you for helping us improve.';
-      form.reset(); write.classList.remove('is-on'); writeToggle.hidden = false; contact.classList.remove('is-on');
-      sent ? showCoupon(msg) : textOwner(data, msg);
+  /* ---------- 3 · Claim: the note goes to the owner, then the coupon shows ---------- */
+  var claimStart = $('[data-claim-start]'), claimTexting = $('[data-claim-texting]'), sentBtn = $('[data-sent]');
+  function toClaim(data, from, doneMsg){
+    state.pending = data; state.from = from; state.doneMsg = doneMsg;
+    claimStart.hidden = false; claimTexting.hidden = true;
+    go('claim');
+  }
+  $('[data-claim-back]').addEventListener('click', function(){ go(state.from); });
+  $('[data-claim]').addEventListener('click', function(){
+    var btn = this; btn.disabled = true; btn.textContent = 'Sending…';
+    send(state.pending).then(function(sent){
+      btn.disabled = false; btn.textContent = 'Claim my 10% off';
+      if (sent) return finish();
+      textOwner(state.pending);
     });
   });
 
-  // No SMS service set up: open the guest's own Messages app, addressed to the owner, note filled in.
+  // No SMS service set up: open the guest's own text app, addressed to the owner, note filled in.
   // Guests who want to talk are flagged on the first line so the owner spots them at a glance.
-  // The coupon waits on a "press send, then come back" screen; the button unlocks once they return (or after a few seconds).
-  var sentBtn = $('[data-sent]'), afterSend = '';
-  function textOwner(d, msg){
+  function textOwner(d){
     var lines = [
       d.followUp ? '📞 WANTS TO TALK — ' + d.name + ' ' + d.phone : '',
       (d.stars >= 4 ? '⭐ ' : '') + 'Eyerus feedback: ' + d.stars + '/5', d.issue && 'Issue: ' + d.issue,
@@ -389,13 +357,18 @@
     ];
     var href = 'sms:' + CONFIG.ownerSms + '?&body=' + encodeURIComponent(lines.filter(Boolean).join('\n'));
     $('[data-sms-again]').href = href;
-    afterSend = msg; sentBtn.disabled = true;
-    go('texting');
+    claimStart.hidden = true; claimTexting.hidden = false; sentBtn.disabled = true;
     setTimeout(function(){ sentBtn.disabled = false; }, 6000);
     location.href = href;
   }
+  // Unlock "I sent it" once they come back from the text app.
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) sentBtn.disabled = false; });
-  sentBtn.addEventListener('click', function(){ showCoupon(afterSend); });
+  sentBtn.addEventListener('click', finish);
+
+  function finish(){
+    form.reset(); write.classList.remove('is-on'); writeToggle.hidden = false; contact.classList.remove('is-on');
+    showCoupon(state.doneMsg);
+  }
 
   /* ---------- Coupon (one per phone, kept across refreshes) ---------- */
   function coupon(){
@@ -410,7 +383,7 @@
   function showCoupon(msg){
     var exp = new Date(current.expires).toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
     $('[data-code]').textContent = current.code;
-    $('[data-terms]').textContent = 'Show this screen to your server · valid until ' + exp + ' · one per table. Screenshot it to keep it.';
+    $('[data-terms]').textContent = 'Show this screen to your server, today or on your next visit · valid until ' + exp + ' · one per table. Screenshot it to keep it.';
     $('[data-done-text]').textContent = msg;
     go('done');
   }
